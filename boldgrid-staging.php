@@ -3,7 +3,7 @@
 /*
  * Plugin Name: BoldGrid Staging
  * Plugin URI: http://www.boldgrid.com
- * Version: 1.0.8
+ * Version: 1.0.9
  * Author: BoldGrid.com <wpb@boldgrid.com>
  * Author URI: http://www.boldgrid.com
  * Description: Edit your website in a staging environment
@@ -21,7 +21,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Define version:
 if ( ! defined( 'BOLDGRID_STAGING_VERSION' ) ) {
-	define( 'BOLDGRID_STAGING_VERSION', '1.0.8' );
+	define( 'BOLDGRID_STAGING_VERSION', '1.0.9' );
 }
 
 // Define Editor Path
