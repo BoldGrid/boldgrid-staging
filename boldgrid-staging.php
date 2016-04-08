@@ -45,7 +45,7 @@ function boldgrid_staging_init() {
 		// Initialize staging for Administrator:
 		// Get the settings (configuration directory):
 		$settings = array (
-			'configDir' => BOLDGRID_STAGING_PATH . '/includes/config' 
+			'configDir' => BOLDGRID_STAGING_PATH . '/includes/config'
 		);
 		// Load and instantiate the staging class:
 		$staging = new Boldgrid_Staging( $settings );
@@ -56,12 +56,12 @@ function boldgrid_staging_init() {
 		 * cannot 'manage_options'
 		 * ********************************************************************
 		 */
-		
+
 		// Register custom post status for all others:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-base.php';
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-page-and-post.php';
 		Boldgrid_Staging_Page_And_Post_Staging::page_register_post_status_development_group();
-		
+
 		/**
 		 * Handle redirects.
 		 *
@@ -72,16 +72,16 @@ function boldgrid_staging_init() {
 		 * another page.
 		 */
 		// Prevent staged pages from showing on the front-end of the site or redirect.
-		add_filter( 'parse_query', 
+		add_filter( 'parse_query',
 			array (
 				'Boldgrid_Staging_Page_And_Post_Staging',
-				'prevent_public_from_seeing_staged_pages' 
+				'prevent_public_from_seeing_staged_pages'
 			), 20 );
-		
-		add_filter( 'template_redirect', 
+
+		add_filter( 'template_redirect',
 			array (
 				'Boldgrid_Staging_Page_And_Post_Staging',
-				'prevent_public_from_seeing_staged_pages' 
+				'prevent_public_from_seeing_staged_pages'
 			) );
 	}
 }
