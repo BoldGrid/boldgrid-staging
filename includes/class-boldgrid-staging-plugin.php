@@ -218,6 +218,8 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 				'boldgrid_inspirations_gridblock_sets_admin_post_construct'
 			) );
 
+		add_filter( 'boldgrid_cart_post_status', array( $this, 'boldgrid_cart_post_status' ) );
+
 		// Hooks intended for only front-end site:
 		if ( ! is_admin() ) {
 			// Change links from "attribution" to "attribution-staging"
@@ -592,6 +594,22 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 		}
 
 		return $new_value;
+	}
+
+	/**
+	 * Have BoldGrid look for watermarked images within staged pages.
+	 *
+	 * By default, BoldGrid will look for watermarked images within draft and published pages.
+	 *
+	 * @since 1.1.2
+	 *
+	 * @param array $post_status The default post_status to look within for watermarked images.
+	 * @return array An array of post_status.
+	 */
+	public function boldgrid_cart_post_status( $post_status ) {
+		$post_status = $this->user_should_see_staging() ? array( 'staging' ) : $post_status;
+
+		return $post_status;
 	}
 
 	/**
