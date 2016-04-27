@@ -242,13 +242,29 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	/**
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		// Add hooks per $pagenow.
 		switch ( $hook ) {
+			// Page Editor.
 			case 'post-new.php' :
 			case 'post.php' :
 				wp_enqueue_script( 'edit.php.js',
 					$this->plugins_url . 'assets/js/manage-menu-assignment-within-editor.js',
 					array (), BOLDGRID_STAGING_VERSION, true );
+				break;
+
+			// BoldGrid Inspirations Cart.
+			case 'boldgrid_page_boldgrid-cart':
+			case 'transactions_page_boldgrid-cart':
+				wp_enqueue_script( 'boldgrid-staging-cart',
+									$this->plugins_url . 'assets/js/boldgrid-staging-cart.js',
+									array (),
+									BOLDGRID_STAGING_VERSION,
+									true
+				);
+				wp_enqueue_style(	'boldgrid-staging-cart',
+									$this->plugins_url . 'assets/css/boldgrid-staging-cart.css',
+									array(),
+									BOLDGRID_STAGING_VERSION
+				);
 				break;
 		}
 	}
