@@ -34,7 +34,6 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 		);
 
 		global $post;
-		$this->is_posttype_page = ( isset( $post->post_type ) && 'page' == $post->post_type );
 
 		// BradM: 2015.06.30: todo: this is a work in progress.
 		// $this->is_404_has_been_triggered = false;
@@ -1102,26 +1101,33 @@ span.permalink {
 	 * Load our class-staging css/js
 	 */
 	public function wp_enqueue_scripts_class_staging( $hook ) {
-		if ( 'edit.php' == $hook && isset( $_GET['post_type'] ) && 'page' == $_GET['post_type'] ) {
-			wp_enqueue_script( 'edit.php.js', $this->plugins_url . 'assets/js/edit.php.js',
-				array (), BOLDGRID_STAGING_VERSION, true );
+		if ( 'edit.php' === $hook && isset( $_GET['post_type'] ) && 'page' === $_GET['post_type'] ) {
+			wp_enqueue_script( 'edit.php.js',
+				$this->plugins_url . 'assets/js/edit.php.js',
+				array (),
+				BOLDGRID_STAGING_VERSION,
+				true
+			);
+
+			wp_enqueue_script( 'class-staging',
+				$this->plugins_url . 'assets/js/class-staging.js',
+				array (),
+				BOLDGRID_STAGING_VERSION,
+				true
+			);
+
+			wp_register_style( 'class-staging',
+				$this->plugins_url . 'assets/css/class-staging.css',
+				array (),
+				BOLDGRID_STAGING_VERSION
+			);
+
+			wp_enqueue_style( 'class-staging' );
 		}
 
-		if ( 'post.php' == $hook ) {
+		if ( 'post.php' === $hook ) {
 			wp_enqueue_script( 'post.php.js', $this->plugins_url . 'assets/js/post.php.js',
 				array (), BOLDGRID_STAGING_VERSION, true );
 		}
-
-		if ( false == $this->is_posttype_page ) {
-			return;
-		}
-
-		wp_enqueue_script( 'class-staging', $this->plugins_url . 'assets/js/class-staging.js',
-			array (), BOLDGRID_STAGING_VERSION, true );
-
-		wp_register_style( 'class-staging', $this->plugins_url . 'assets/css/class-staging.css',
-			array (), BOLDGRID_STAGING_VERSION );
-
-		wp_enqueue_style( 'class-staging' );
 	}
 }
