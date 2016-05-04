@@ -33,8 +33,6 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 			'Active' => 'publish'
 		);
 
-		global $post;
-
 		// BradM: 2015.06.30: todo: this is a work in progress.
 		// $this->is_404_has_been_triggered = false;
 		// $this->is_home_has_been_triggered = false;
@@ -1108,26 +1106,23 @@ span.permalink {
 				BOLDGRID_STAGING_VERSION,
 				true
 			);
+		}
 
-			wp_enqueue_script( 'class-staging',
-				$this->plugins_url . 'assets/js/class-staging.js',
+		if ( 'post.php' === $hook ) {
+			wp_enqueue_script( 'post.php.js',
+				$this->plugins_url . 'assets/js/post.php.js',
 				array (),
 				BOLDGRID_STAGING_VERSION,
 				true
 			);
-
-			wp_register_style( 'class-staging',
-				$this->plugins_url . 'assets/css/class-staging.css',
-				array (),
-				BOLDGRID_STAGING_VERSION
-			);
-
-			wp_enqueue_style( 'class-staging' );
 		}
 
-		if ( 'post.php' === $hook ) {
-			wp_enqueue_script( 'post.php.js', $this->plugins_url . 'assets/js/post.php.js',
-				array (), BOLDGRID_STAGING_VERSION, true );
-		}
+		wp_register_style( 'class-staging',
+			$this->plugins_url . 'assets/css/class-staging.css',
+			array (),
+			BOLDGRID_STAGING_VERSION
+		);
+
+		wp_enqueue_style( 'class-staging' );
 	}
 }
