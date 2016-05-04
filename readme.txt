@@ -2,7 +2,7 @@
 Contributors: imh_brad, joemoto, rramo012, timph
 Tags: inspiration,customization,build,create,design,staging
 Requires at least: 4.3
-Tested up to: 4.5
+Tested up to: 4.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 = 1.1.2 In progress =
 * New feature:	JIRA WPB-1865	Add active / staging navigation to BoldGrid Inspirations Cart.
+* Update:		JIRA WPB-1884	Passed WordPress 4.5.1 testing.
 * Bug fix:		JIRA WPB-1863	BoldGrid Cart does not look for watermarked images used within staged pages.
 
 = 1.1.1 =
