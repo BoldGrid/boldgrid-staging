@@ -253,7 +253,7 @@ class Boldgrid_Staging {
 		$boldgrid_staging_option = new Boldgrid_Staging_Option();
 
 		wp_register_script( 'hook.options-reading.php.js',
-			$this->plugins_url . 'assets/js/hook.options-reading.php.js', array (),
+			$this->plugins_url . 'assets/js/hook.options-reading.php.js', array( 'jquery', 'wp-util' ),
 			BOLDGRID_STAGING_VERSION, true );
 
 		wp_localize_script( 'hook.options-reading.php.js', 'boldgrid_staging_options_to_stage',
