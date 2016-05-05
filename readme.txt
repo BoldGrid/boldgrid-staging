@@ -26,6 +26,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 * Bug fix:		JIRA WPB-1863	BoldGrid Cart does not look for watermarked images used within staged pages.
 * Bug fix:		JIRA WPB-1888	Staging options missing from Dashboard > Settings > Reading.
 * Bug fix:		JIRA WPB-1887	Copy to Staging link does not have correct cursor.
+* Bug fix:		JIRA WPB-1892	Page template not saving correctly for staged pages.
 
 = 1.1.1 =
 * Bug fix:		JIRA WPB-1834	Delete BoldGrid Staging Attribution page when starting over.

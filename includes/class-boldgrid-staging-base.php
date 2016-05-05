@@ -148,24 +148,55 @@ class Boldgrid_Staging_Base {
 	}
 
 	/**
-	 * Determine if a passed in parameter for a post, is a staging post
+	 * Determine if a passed in parameter for a post, is a staging post.
+	 *
+	 * @since 1.0.6
 	 *
 	 * @param int $_REQUEST['post']
 	 * @param int $_REQUEST['post_id']
-	 * @since 1.0.6
+	 * @param int $_REQUEST['post_ID']
 	 * @return boolean
 	 */
 	public function is_staging_post() {
-		$post_id = ! empty( $_REQUEST['post'] ) ? intval( $_REQUEST['post'] ) : null;
+		// Get the post ID. It could be set as several different keys in the $_REQUEST.
+		$possible_post_ids = array( 'post', 'post_id', 'post_ID' );
 
-		$post_id_alt = ! empty( $_REQUEST['post_id'] ) ? intval( $_REQUEST['post_id'] ) : null;
-
-		$post_id = $post_id ? $post_id : $post_id_alt;
+		foreach( $possible_post_ids as $post_id ) {
+			if( ! empty( $_REQUEST[ $post_id ] ) ) {
+				$post_id = intval( $_REQUEST[ $post_id ] );
+				break;
+			}
+		}
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
 
-			return ( $post && 'staging' == $post->post_status );
+			// Is the user editing a page?
+			$is_editing = ( ! empty( $_REQUEST[ 'action' ] ) && 'editpost' === $_REQUEST[ 'action' ] );
+
+			/*
+			 * When editing a page, options for 'Active' and 'Staging' are listed under "Development Group"
+			 * within the "Publish" metabox.
+			 *
+			 * The selected option is in the $_REQUEST as 'development_group_post_status'.
+			 *
+			 * Do we have 'development_group_post_status' in the $_REQUEST?
+			 */
+			$has_dev_group = ( ! empty( $_REQUEST[ 'development_group_post_status' ] ) );
+
+			/*
+			 * If we are editing a page and 'development_group_post_status' is in the $_REQUEST,
+			 * treat post_status as whatever is set in 'development_group_post_status'.
+			 *
+			 * Else, the post_status will be whatever $post->post_status is actually set to.
+			 */
+			if( $is_editing && $has_dev_group ) {
+				return ( 'staging' === $_REQUEST[ 'development_group_post_status' ] );
+			} else {
+				return ( $post && 'staging' === $post->post_status );
+			}
+		} else {
+			return false;
 		}
 	}
 
