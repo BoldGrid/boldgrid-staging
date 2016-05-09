@@ -677,8 +677,9 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @param array $page_ids
 	 */
 	public function boldgrid_inspirations_cleanup_page_ids( $page_ids ) {
-		// Get the metadata about the pages we installed during deployment.
+		// Get and validate the metadata about the pages we installed during deployment.
 		$installed_page_metadata = get_option( 'boldgrid_staging_boldgrid_installed_pages_metadata', array() );
+		$installed_page_metadata = ( is_array( $installed_page_metadata ) ? $installed_page_metadata : array() );
 
 		foreach ( $installed_page_metadata as $page_id => $page_data ) {
 			// Was this page installed as a private post?
@@ -708,8 +709,9 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			}
 		}
 
-		// Get our Staging attribution page.
+		// Get and validate our Staging attribution page.
 		$attribution = get_option( 'boldgrid_staging_boldgrid_attribution' );
+		$attribution = ( is_array( $attribution ) ? $attribution : false );
 
 		if ( false !== $attribution ) {
 			$page_ids[] = $attribution['page']['id'];
