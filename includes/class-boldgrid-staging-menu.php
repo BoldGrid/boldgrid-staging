@@ -36,6 +36,8 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 				$this,
 				'wp_nav_menu_args'
 			) );
+
+			add_filter( 'wp_page_menu_args' , array( $this, 'wp_page_menu_args' ) );
 		}
 	}
 
@@ -67,6 +69,25 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 		 */
 		if ( $this->user_should_see_staging() && isset( $args['menu'] ) ) {
 			$args['menu'] = '';
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Filter wp_page_menu_args.
+	 *
+	 * If the user does not have a menu assigned to a location, a theme my use wp_page_menu as
+	 * their fallback_cb. If a theme does use wp_page_menu, ensure that only staged pages are
+	 * fetched when applicable. Otherwise, a Staging site's menu will show Active pages.
+	 *
+	 * @since 1.1.2
+	 *
+	 * @param array $args An array of page menu arguments.
+	 */
+	public function wp_page_menu_args( $args ) {
+		if ( $this->user_should_see_staging() ) {
+			$args[ 'post_status' ] = array( 'staging' );
 		}
 
 		return $args;
