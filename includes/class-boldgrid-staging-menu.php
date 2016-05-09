@@ -25,7 +25,7 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 	public function __construct() {
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Add hooks
 	 */
@@ -34,20 +34,20 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 		} else {
 			add_filter( 'wp_nav_menu_args', array (
 				$this,
-				'wp_nav_menu_args' 
+				'wp_nav_menu_args'
 			) );
 		}
 	}
-	
+
 	/**
 	 * WP Nav Menu Args
 	 *
-	 * @param array $args        	
+	 * @param array $args
 	 *
 	 * @return array
 	 */
 	public function wp_nav_menu_args( $args ) {
-		
+
 		/**
 		 * Some theme authors may hard code 'primary' as the 'menu'.
 		 * We need to unset 'menu' so that it will use the menu we defined.
@@ -68,7 +68,7 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 		if ( $this->user_should_see_staging() && isset( $args['menu'] ) ) {
 			$args['menu'] = '';
 		}
-		
+
 		return $args;
 	}
 }
