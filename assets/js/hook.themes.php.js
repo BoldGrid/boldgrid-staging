@@ -162,7 +162,7 @@ IMHWPB.StagingThemes = function() {
 
 		jQuery
 				.post(
-						ajaxurl,
+						ajaxurl + '?staging=1',
 						data,
 						function(response) {
 							if ('success' == response) {

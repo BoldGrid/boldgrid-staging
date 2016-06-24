@@ -220,6 +220,13 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 
 			update_option( $option_name, $new_staged_stylesheet_theme_mods );
 
+			/*
+			 * Run 'activate' on the BoldGrid Theme Framework.
+			 *
+			 * This will handle tasks such as clearing and creating widgets.
+			 */
+			do_action( 'boldgrid_activate_framework' );
+
 			echo 'success';
 		}
 
