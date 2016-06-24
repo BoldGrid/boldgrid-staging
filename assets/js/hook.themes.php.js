@@ -12,7 +12,7 @@ IMHWPB.StagingThemes = function() {
 	});
 
 	/**
-	 * 
+	 *
 	 */
 	this.add_stage_button_to_each_theme = function() {
 		// loop through each theme
@@ -62,7 +62,7 @@ IMHWPB.StagingThemes = function() {
 
 		/**
 		 * Add "Stage" button to active theme.
-		 * 
+		 *
 		 * ONLY add a "Stage" button to the active theme IF the active theme is
 		 * not also the staged theme.
 		 */
@@ -75,7 +75,7 @@ IMHWPB.StagingThemes = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.highlight_staged_stylesheet = function() {
 
@@ -113,7 +113,7 @@ IMHWPB.StagingThemes = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.set_active_theme_name = function() {
 		var h2_id = jQuery('div.theme.active .theme-name')[0].id;
@@ -122,7 +122,7 @@ IMHWPB.StagingThemes = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.set_staged_theme_name = function() {
 		var data = {
@@ -150,7 +150,7 @@ IMHWPB.StagingThemes = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.set_staged_theme = function(theme_div) {
 		var stylesheet = jQuery(theme_div).data('stylesheet');
@@ -174,7 +174,7 @@ IMHWPB.StagingThemes = function() {
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	this.unstage_theme = function() {
 		var data = {
