@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Plugin Name: BoldGrid Staging
  * Plugin URI: http://www.boldgrid.com
@@ -12,28 +11,57 @@
  * License: GPLv2 or later
  */
 
-// Prevent direct calls
-if ( ! defined( 'WPINC' ) ) {
+// Prevent direct calls.
+if ( false === defined( 'WPINC' ) ) {
 	header( 'Status: 403 Forbidden' );
 	header( 'HTTP/1.1 403 Forbidden' );
 	exit();
 }
 
-// Define version:
-if ( ! defined( 'BOLDGRID_STAGING_VERSION' ) ) {
+// Define version.
+if ( false === defined( 'BOLDGRID_STAGING_VERSION' ) ) {
 	define( 'BOLDGRID_STAGING_VERSION', '1.1.2' );
 }
 
-// Define Editor Path
-if ( ! defined( 'BOLDGRID_STAGING_PATH' ) ) {
-	define( 'BOLDGRID_STAGING_PATH', __DIR__ );
+// Define Editor path.
+if ( false === defined( 'BOLDGRID_STAGING_PATH' ) ) {
+	define( 'BOLDGRID_STAGING_PATH', dirname ( __FILE__ ) );
 }
 
-// Load only in the admin section for Administrators:
+// Define Editor configuration directory.
+if ( false === defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
+	define( 'BOLDGRID_STAGING_CONFIGDIR', BOLDGRID_STAGING_PATH . '/includes/config' );
+}
+
+// Load only in the admin section for Administrators.
 require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging.php';
 
+// If DOING_CRON, then check if this plugin should be auto-updated.
+if ( true === defined( 'DOING_CRON' ) && DOING_CRON ){
+	// Ensure required definitions for pluggable.
+	if ( false === defined( 'AUTH_COOKIE' ) ) {
+		define( 'AUTH_COOKIE', null );
+	}
+
+	if ( false === defined( 'LOGGED_IN_COOKIE' ) ) {
+		define( 'LOGGED_IN_COOKIE', null );
+	}
+
+	// Load the pluggable class, if needed.
+	require_once ABSPATH . 'wp-includes/pluggable.php';
+
+	// Include the update class.
+	require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-update.php';
+
+	// Instantiate the update class.
+	$plugin_update = new Boldgrid_Staging_Update();
+
+	// Check and update plugins.
+	$plugin_update->wp_update_this_plugin();
+}
+
 /**
- * Plugin init
+ * Plugin init.
  */
 function boldgrid_staging_init() {
 	/**
@@ -42,13 +70,8 @@ function boldgrid_staging_init() {
 	 * ************************************************************************
 	 */
 	if ( current_user_can( 'manage_options' ) ) {
-		// Initialize staging for Administrator:
-		// Get the settings (configuration directory):
-		$settings = array (
-			'configDir' => BOLDGRID_STAGING_PATH . '/includes/config'
-		);
-		// Load and instantiate the staging class:
-		$staging = new Boldgrid_Staging( $settings );
+		// Load and instantiate the staging class.
+		$staging = new Boldgrid_Staging();
 	} else {
 		/**
 		 * ********************************************************************

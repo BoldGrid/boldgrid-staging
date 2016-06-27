@@ -13,49 +13,9 @@
  */
 class Boldgrid_Staging_Update {
 	/**
-	 * BoldGrid Staging class object.
-	 *
-	 * @access private
-	 * @var object The BoldGrid Staging object.
-	 */
-	private $boldgrid_staging = null;
-
-	/**
-	 * Setter for the BoldGrid Staging class object.
-	 *
-	 * @access private
-	 *
-	 * @param object $boldgrid_staging The BoldGrid Staging object.
-	 * @return bool
-	 */
-	private function set_boldgrid_staging( $boldgrid_staging ) {
-		$this->boldgrid_staging = $boldgrid_staging;
-		return true;
-	}
-
-	/**
-	 * Getter for the BoldGrid Staging class object.
-	 *
-	 * @access protected
-	 *
-	 * @return object
-	 */
-	protected function get_boldgrid_staging() {
-		return $this->boldgrid_staging;
-	}
-
-	/**
 	 * Constructor.
-	 *
-	 * Add filters.
-	 *
-	 * @param object $boldgrid_staging The BoldGrid Staging object.
-	 * @return null
 	 */
-	public function __construct( $boldgrid_staging ) {
-		// Set the BoldGrid Editor class object (used to get configs).
-		$this->set_boldgrid_staging( $boldgrid_staging );
-
+	public function __construct() {
 		// Only for wp-admin.
 		if ( is_admin() ) {
 			// Get the current WordPress page filename.
@@ -84,13 +44,13 @@ class Boldgrid_Staging_Update {
 					array (
 						$this,
 						'custom_plugins_transient_update'
-					), 10, 1 );
+					), 10 );
 
 				add_filter( 'plugins_api',
 					array (
 						$this,
 						'custom_plugins_transient_update'
-					), 10, 1 );
+					), 10 );
 
 				// Force WP to check for updates, don't rely on cache / transients.
 				add_filter( 'site_transient_update_plugins',
@@ -113,18 +73,28 @@ class Boldgrid_Staging_Update {
 	 */
 	public function custom_plugins_transient_update( $transient ) {
 		// Get version data transient.
-		if ( is_multisite() ) {
+		if ( true === is_multisite() ) {
 			$version_data = get_site_transient( 'boldgrid_staging_version_data' );
 		} else {
 			$version_data = get_transient( 'boldgrid_staging_version_data' );
 		}
 
-		// Get the BoldGrid Editor class object for getting configs.
-		$boldgrid_staging = $this->get_boldgrid_staging();
+		// Set the config class file path.
+		$config_class_path = BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-config.php';
+
+		// If the config class file is not readable, then return the current transient.
+		if ( false === is_readable( $config_class_path ) ) {
+			return $transient;
+		}
+
+		// Include the config class.
+		require_once $config_class_path;
+
+		// Instantiate the config class.
+		$boldgrid_staging_config = new Boldgrid_Staging_Config();
 
 		// Get configs.
-		$configs = $boldgrid_staging->get_boldgrid_staging_config()
-			->get_configs();
+		$configs = $boldgrid_staging_config->get_configs();
 
 		// Get the installed plugin data.
 		$plugin_data = get_plugin_data( BOLDGRID_STAGING_PATH . '/boldgrid-staging.php', false );
@@ -316,5 +286,68 @@ class Boldgrid_Staging_Update {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Action to add a filter to check if this plugin should be auto-updated.
+	 *
+	 * @since 1.1.5
+	 */
+	public function wp_update_this_plugin () {
+		// Add filters to modify plugin update transient information.
+		add_filter( 'pre_set_site_transient_update_plugins',
+			array (
+				$this,
+				'custom_plugins_transient_update'
+			)
+		);
+
+		add_filter( 'plugins_api',
+			array (
+				$this,
+				'custom_plugins_transient_update'
+			)
+		);
+
+		add_filter( 'site_transient_update_plugins',
+			array (
+				$this,
+				'site_transient_update_plugins'
+			)
+		);
+
+		add_filter( 'auto_update_plugin',
+			array (
+				$this,
+				'auto_update_this_plugin'
+			), 10, 2
+		);
+
+		add_filter( 'auto_update_plugins',
+			array (
+				$this,
+				'auto_update_this_plugin'
+			), 10, 2
+		);
+
+		// Have WordPress check for plugin updates.
+		wp_maybe_auto_update();
+	}
+
+	/**
+	 * Filter to check if this plugin should be auto-updated.
+	 *
+	 * @since 1.1.5
+	 *
+	 * @param bool $update Whether or not this plugin is set to update.
+	 * @param object $item The plugin transient object.
+	 * @return bool Whether or not to update this plugin.
+	 */
+	public function auto_update_this_plugin ( $update, $item ) {
+		if ( isset( $item->slug['boldgrid-staging'] ) && isset( $item->autoupdate ) ) {
+			return true;
+		} else {
+			return $update;
+		}
 	}
 }

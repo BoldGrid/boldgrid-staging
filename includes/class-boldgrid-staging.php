@@ -18,21 +18,21 @@ class Boldgrid_Staging {
 	private $boldgrid_staging_config;
 
 	/**
-	 * The URL address for this plugin
-	 *
-	 * @var string
+	 * The URL address for this plugin.
 	 */
 	public $plugins_url;
 
-	// Constructor:
-	public function __construct( $settings ) {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		// Load and check for plugin updates:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-update.php';
-		$plugin_update = new Boldgrid_Staging_Update( $this );
+		$plugin_update = new Boldgrid_Staging_Update();
 
 		// Load and instantiate Boldgrid_Staging_Config:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-config.php';
-		$this->boldgrid_staging_config = new Boldgrid_Staging_Config( $settings );
+		$this->boldgrid_staging_config = new Boldgrid_Staging_Config();
 
 		$this->plugins_url = plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/';
 
@@ -69,7 +69,7 @@ class Boldgrid_Staging {
 	}
 
 	/**
-	 * Get staging config class property
+	 * Get staging config class property.
 	 *
 	 * @return Boldgrid_Staging_Config
 	 */
@@ -78,7 +78,7 @@ class Boldgrid_Staging {
 	}
 
 	/**
-	 * Add WordPress hooks:
+	 * Add WordPress hooks.
 	 */
 	public function add_hooks() {
 		if ( is_admin() ) {
