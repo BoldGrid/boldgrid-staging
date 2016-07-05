@@ -224,8 +224,10 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 			 * Run 'activate' on the BoldGrid Theme Framework.
 			 *
 			 * This will handle tasks such as clearing and creating widgets.
+			 *
+			 * This causes issues with boldgrid widgets and active palette being reset.
 			 */
-			do_action( 'boldgrid_activate_framework' );
+			//do_action( 'boldgrid_activate_framework' );
 
 			echo 'success';
 		}
