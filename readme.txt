@@ -20,13 +20,8 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
-= 1.1.5 In progress =
-* New feature:	JIRA WPB-2037	Added capability for auto-updates by BoldGrid API response.
-
-= 1.1.4 =
-* Bug fix:		JIRA WPB-2074	When staging a theme, theme framework widgets are not created.
-
 = 1.1.3 =
+* New feature:	JIRA WPB-2037	Added capability for auto-updates by BoldGrid API response.
 * Testing:		JIRA WPB-2046	Tested on WordPress 4.5.3.
 
 = 1.1.2 =
