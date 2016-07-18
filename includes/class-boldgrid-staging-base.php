@@ -20,6 +20,15 @@ if ( ! defined( 'WPINC' ) ) {
  */
 class Boldgrid_Staging_Base {
 	/**
+	 * Status of whether or not we're in an ajax call.
+	 *
+	 * @since  1.1.4
+	 * @access public
+	 * @var    bool $in_ajax.
+	 */
+	public $in_ajax;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -37,6 +46,8 @@ class Boldgrid_Staging_Base {
 		$this->set_view_version();
 
 		$this->set_has_staging_theme();
+
+		$this->in_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 	}
 
 	/**

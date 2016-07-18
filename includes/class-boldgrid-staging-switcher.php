@@ -112,6 +112,8 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			$this,
 			'modify_admin_bar'
 		), 999 );
+
+		add_filter( 'admin_url', array( $this, 'admin_url' ), 10, 3 );
 	}
 
 	/**
@@ -155,6 +157,25 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		wp_enqueue_script( 'admin-staging-switcher.js',
 			$this->plugins_url . 'assets/js/admin-staging-switcher.js', array (),
 			BOLDGRID_STAGING_VERSION, true );
+	}
+
+	/**
+	 * Modify admin urls returned by the get_admin_url function.
+	 *
+	 * @since 1.1.4
+	 *
+	 * @param  string   $url     The complete admin area URL including scheme and path.
+     * @param  string   $path    Path relative to the admin area URL. Blank string if no path is specified.
+     * @param  int|null $blog_id Site ID, or null for the current site.
+     * @return string   $url.
+	 */
+	public function admin_url( $url, $path, $blog_id ) {
+		// If we're getting the AJAX url, append ?staging=1 if necessary.
+		if( 'admin-ajax.php' === $path && $this->user_should_see_staging() ) {
+			$url .= '?staging=1';
+		}
+
+		return $url;
 	}
 
 	/**

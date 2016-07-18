@@ -234,30 +234,51 @@ span.permalink {
 	public function admin_page_pre_get_posts( $query ) {
 		global $pagenow;
 
-		switch ( $pagenow ) {
-			/**
-			 * Appearance >> Menus
-			 */
-			case 'nav-menus.php' :
-				// 'staging' nav_menu_item's are actually published, so only modify the
-				// query below if we're not looking at nav_menu_item's
-				if ( 'nav_menu_item' != $query->get( 'post_type' ) ) {
-					// show only staged content
-					if ( $this->user_should_see_staging() ) {
-						$query->set( 'post_status', array (
-							'staging'
-						) );
-						return;
-					}
-					// show only publish content
-					if ( false == $this->user_should_see_staging() ) {
-						$query->set( 'post_status', array (
-							'publish'
-						) );
-						return;
-					}
-				}
-				break;
+		/*
+		 * If we're in the dashboard managing menus, filter the list of pages the user is able
+		 * to see and add to their menu.
+		 *
+		 * nav_menu_items are not actually staged, they're published. Only modify the query if we're
+		 * not looking at nav_menu_item's.
+		 */
+		if( 'nav-menus.php' === $pagenow && 'nav_menu_item' != $query->get( 'post_type' ) ) {
+			if ( $this->user_should_see_staging() ) {
+				$query->set( 'post_status', array ( 'staging' ) );
+			} else {
+				$query->set( 'post_status', array ( 'publish' ) );
+			}
+
+			return;
+		}
+
+		/*
+		 * While in the Customizer, an AJAX call is made to get a list of pages the user can add to
+		 * a menu.
+		 *
+		 * The below conditional fixes a bug in which active pages were returned, when instead only
+		 * staging pages should have been returned.
+		 */
+		if (	// Is this an AJAX call?
+				$this->in_ajax &&
+
+				// Should the user see staging?
+				$this->user_should_see_staging() &&
+
+				/*
+				 * Are we querying for a list of pages to add to a menu?
+				*
+				* $_REQUEST['action'] = 'load-available-menu-items-customizer'
+				* $_REQUEST['object'] = 'page'
+				*/
+				isset( $_REQUEST['action'] ) &&
+				'load-available-menu-items-customizer' === $_REQUEST['action'] &&
+
+				isset( $_REQUEST['object'] ) &&
+				'page' === $_REQUEST['object']
+		) {
+				$query->set( 'post_status', array( 'staging' ) );
+
+				return;
 		}
 	}
 

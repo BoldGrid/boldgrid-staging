@@ -9,11 +9,6 @@ BoldGrid_Staging.Cart = function( $ ) {
 	var self = this;
 
 	$( function() {
-		// If we're in the Staging version of the cart, ensure ajax requests are staged.
-		if( '1' == self.getParameterByName( 'staging' ) ) {
-			ajaxurl += '?staging=1';
-		}
-
 		self.add_navigation();
 	});
 
