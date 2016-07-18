@@ -22,9 +22,9 @@ if ( ! defined( 'WPINC' ) ) {
 class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 	public $site_types = array (
 		'active',
-		'staging' 
+		'staging'
 	);
-	
+
 	/**
 	 * Constructor
 	 */
@@ -33,10 +33,10 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		if ( ! isset( $_SESSION['wp_staging_view_version'] ) ) {
 			$_SESSION['wp_staging_view_version'] = 'production';
 		}
-		
+
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Adds the WordPress Ajax Library to the frontend.
 	 */
@@ -47,7 +47,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		</script>
 <?php
 	} // end add_ajax_library
-	
+
 	/**
 	 * Add hooks
 	 */
@@ -60,13 +60,13 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		if ( ! is_admin() ) {
 			add_action( 'wp_enqueue_scripts', array (
 				$this,
-				'enqueue_scripts' 
+				'enqueue_scripts'
 			) );
-			
+
 			// Include the Ajax library on the front end
 			add_action( 'wp_head', array (
 				$this,
-				'add_ajax_library' 
+				'add_ajax_library'
 			) );
 		} else {
 			/**
@@ -74,50 +74,50 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			 * admin hooks
 			 * ****************************************************************
 			 */
-			
-			add_action( 'admin_enqueue_scripts', 
+
+			add_action( 'admin_enqueue_scripts',
 				array (
 					$this,
-					'admin_enqueue_scripts' 
+					'admin_enqueue_scripts'
 				) );
-			
+
 			// Register method to handle ajax request to switch between staging / development
-			add_action( 'wp_ajax_switch_to_staging', 
+			add_action( 'wp_ajax_switch_to_staging',
 				array (
 					$this,
-					'switch_to_staging_callback' 
+					'switch_to_staging_callback'
 				) );
-			
+
 			// Go from dashboard to front end (production or staging)
 			add_action( 'wp_enqueue_scripts', array (
 				$this,
-				'admin_enqueue_scripts' 
+				'admin_enqueue_scripts'
 			) );
-			
+
 			// Create an intermediary page to visit front end of site.
 			add_action( 'init', array (
 				$this,
-				'visit_site_via_intermediary_page' 
+				'visit_site_via_intermediary_page'
 			) );
 		}
-		
+
 		/**
 		 * ********************************************************************
 		 * global hooks (both admin and wp)
 		 * ********************************************************************
 		 */
-		
+
 		// Add to the admin menu bar the option to switch between staging / development
 		add_action( 'admin_bar_menu', array (
 			$this,
-			'modify_admin_bar' 
+			'modify_admin_bar'
 		), 999 );
 	}
-	
+
 	/**
 	 * Modify the admin bars for staging
 	 *
-	 * @param unknown $wp_admin_bar        	
+	 * @param unknown $wp_admin_bar
 	 */
 	public function modify_admin_bar( $wp_admin_bar ) {
 		// Only modify the admin bar IF the user has a staging theme set.
@@ -139,35 +139,35 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 				 */
 				// Add a 'Switch to staging' link.
 				$this->modify_wp_admin_bar_add_switch_to_staging( $wp_admin_bar );
-				
+
 				// Modify links that include customize.php and add &staging=1 if applicable
 				$wp_admin_bar = $this->modify_wp_admin_bar_update_customize_links( $wp_admin_bar );
 			}
 		}
 	}
-	
+
 	/**
 	 * Enqueue admin staging switcher
 	 *
-	 * @param string $hook        	
+	 * @param string $hook
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_enqueue_script( 'admin-staging-switcher.js', 
-			$this->plugins_url . 'assets/js/admin-staging-switcher.js', array (), 
+		wp_enqueue_script( 'admin-staging-switcher.js',
+			$this->plugins_url . 'assets/js/admin-staging-switcher.js', array (),
 			BOLDGRID_STAGING_VERSION, true );
 	}
-	
+
 	/**
 	 * Enqueue staging switcher
 	 *
-	 * @param string $hook        	
+	 * @param string $hook
 	 */
 	public function enqueue_scripts( $hook ) {
-		wp_enqueue_script( 'staging-switcher.js', 
-			$this->plugins_url . 'assets/js/staging-switcher.js', array (), BOLDGRID_STAGING_VERSION, 
+		wp_enqueue_script( 'staging-switcher.js',
+			$this->plugins_url . 'assets/js/staging-switcher.js', array (), BOLDGRID_STAGING_VERSION,
 			true );
 	}
-	
+
 	/**
 	 * Add &staging=1 to all the links in the admin bar if applicable
 	 */
@@ -177,14 +177,14 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			 * First, update all the customize.php links
 			 */
 			$all_toolbar_nodes = $wp_admin_bar->get_nodes();
-			
+
 			foreach ( $all_toolbar_nodes as $node ) {
 				if ( substr_count( $node->href, 'customize.php' ) > 0 ) {
 					$node->href .= '&staging=1';
 					$wp_admin_bar->add_node( $node );
 				}
 			}
-			
+
 			/*
 			 * Then, update the "Menus" link
 			 */
@@ -192,14 +192,14 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			$menus_node->href .= '?staging=1';
 			$wp_admin_bar->add_node( $menus_node );
 		}
-		
+
 		return $wp_admin_bar;
 	}
-	
+
 	/**
 	 * Modify admin bad visit site selection
 	 *
-	 * @param unknown $wp_admin_bar        	
+	 * @param unknown $wp_admin_bar
 	 */
 	public function modify_admin_bar_visit_site( $wp_admin_bar ) {
 		// Change "view site" to "view active site"
@@ -208,7 +208,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		$view_site_node->href = '?page=boldgrid-staging&visit=active';
 		$view_site_node->meta['class'] = 'admin_view_production_site';
 		$wp_admin_bar->add_node( $view_site_node );
-		
+
 		// Add "view staging site"
 		$args = array (
 			'id' => 'boldgrid_staging',
@@ -216,13 +216,13 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			'parent' => 'site-name',
 			'href' => '?page=boldgrid-staging&visit=staging',
 			'meta' => array (
-				'class' => 'admin_view_staging_site' 
-			) 
+				'class' => 'admin_view_staging_site'
+			)
 		);
-		
+
 		$wp_admin_bar->add_node( $args );
 	}
-	
+
 	/**
 	 * Modify the frontend admin bar and add a 'switch to staging' link.
 	 */
@@ -235,7 +235,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		 */
 		$switch_to = 'staging' == $_SESSION['wp_staging_view_version'] ? 'Active' : 'Staging';
 		$current_version = 'staging' == $_SESSION['wp_staging_view_version'] ? 'Staging' : 'Active';
-		
+
 		/**
 		 * Add parent item to admin bar.
 		 *
@@ -245,11 +245,11 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			'id' => 'boldgrid_staging',
 			'title' => 'Version: ' . $current_version,
 			'meta' => array (
-				'class' => 'wp_staging_view_version' 
-			) 
+				'class' => 'wp_staging_view_version'
+			)
 		);
 		$wp_admin_bar->add_node( $args );
-		
+
 		/**
 		 * Add to the parent item in the admin bar a link that
 		 * allows the user to switch between staging / production.
@@ -260,20 +260,20 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			'href' => '/',
 			'parent' => 'boldgrid_staging',
 			'meta' => array (
-				'class' => 'wp_staging_switch_version' 
-			) 
+				'class' => 'wp_staging_switch_version'
+			)
 		);
 		$wp_admin_bar->add_node( $args );
 	}
-	
+
 	/**
 	 * Process ajax requests to switch between staging / production
 	 */
 	public function switch_to_staging_callback() {
 		global $wpdb;
-		
+
 		$this->session_start();
-		
+
 		/**
 		 * ********************************************************************
 		 * Requests coming from the admin (dashboard) admin_bar
@@ -286,12 +286,12 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 			} else {
 				$_SESSION['wp_staging_view_version'] = 'production';
 			}
-			
+
 			echo get_site_url();
-			
+
 			wp_die();
 		}
-		
+
 		/**
 		 * ********************************************************************
 		 * Requests coming from admin (dashboard) edit.php
@@ -300,56 +300,56 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 		if ( isset( $_POST['request_from'] ) && 'all_pages_row_view' == $_POST['request_from'] &&
 			 isset( $_POST['post_id'] ) ) {
 			$post_status = get_post_status( $_POST['post_id'] );
-			
+
 			$_SESSION['wp_staging_view_version'] = ( 'staging' == $post_status ? 'staging' : 'production' );
-			
+
 			echo get_permalink( $_POST['post_id'] );
-			
+
 			wp_die();
 		}
-		
+
 		/**
 		 * ****************************************************************
 		 * All other requests
 		 * ****************************************************************
 		 */
-		
+
 		$_SESSION['wp_staging_view_version'] = ( 'staging' == $_SESSION['wp_staging_view_version'] ? 'production' : 'staging' );
-		
+
 		// Initially, when a user switched between versions of their site, it would simply refresh
 		// the page.
 		// This triggers a 404 when switching however, as one URL cannot exist in both active and
 		// staging.
 		// Instead, we'll redirect the user to their homepage.
 		echo get_site_url();
-		
+
 		wp_die(); // this is required to terminate immediately and return a proper response
 	}
-	
+
 	/**
 	 * Create an intermediary page to visit front end of site
 	 *
-	 * @param string $_GET['page']        	
-	 * @param string $_GET['visit']        	
+	 * @param string $_GET['page']
+	 * @param string $_GET['visit']
 	 *
 	 * @return void
 	 */
 	public function visit_site_via_intermediary_page() {
-		if ( isset( $_GET['page'] ) && 'boldgrid-staging' == $_GET['page'] && isset( 
+		if ( isset( $_GET['page'] ) && 'boldgrid-staging' == $_GET['page'] && isset(
 			$_GET['visit'] ) ) {
 			// Which site does the user want to visit?
 			$visit = sanitize_text_field( $_GET['visit'] );
-			
+
 			// If the user did not pass over a valid 'visit', abort.
 			if ( ! in_array( $visit, $this->site_types ) ) {
 				return;
 			}
-			
+
 			// Set the cookie...
 			$_SESSION['wp_staging_view_version'] = ( 'staging' == $visit ? 'staging' : 'production' );
-			
+
 			wp_redirect( home_url() );
-			
+
 			exit();
 		}
 	}
