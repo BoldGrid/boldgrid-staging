@@ -27,9 +27,9 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 	/**
 	 * In the left sidebar of the customizer, allow the user to change to their
 	 * staged theme.
-	 * 
+	 *
 	 * CHANGE: Active theme
-	 * 
+	 *
 	 * TO: Active theme / Staged theme
 	 */
 	this.add_staging_theme_next_to_active_theme = function() {
@@ -78,7 +78,7 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.getParameterByName = function(name) {
 		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -88,11 +88,11 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.hide_unknown_settings_in_customizer = function() {
 		//Temporarily allowing all panels until we lock down which panels we will use
-		return; 
+		return;
 		var allowed_sections = [ 'accordion-section-themes', 'accordion-section-title_tagline',
 				'accordion-panel-logo_stylzr', 'accordion-section-colors',
 				'accordion-section-social_media', 'accordion-section-header_image',
@@ -112,7 +112,7 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.update_customizer_verbiage = function() {
 		if ('1' != self.getParameterByName('staging')) {
@@ -131,7 +131,7 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 
 	/**
 	 * Change "Save & Activate" to "Save & Stage".
-	 * 
+	 *
 	 * This is the save button of the customizer.
 	 */
 	this.update_save_and_activate_button = function() {
