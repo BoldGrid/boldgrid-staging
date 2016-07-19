@@ -359,7 +359,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	public function boldgrid_attribution_page_ids( $attribution_page_ids ) {
 		$wp_options_attribution = get_option( 'boldgrid_staging_boldgrid_attribution' );
 
-		if ( isset( $wp_options_attribution['page']['id'] ) ) {
+		if ( is_array( $wp_options_attribution ) &&  ! empty( $wp_options_attribution['page']['id'] ) ) {
 			$attribution_page_ids[] = $wp_options_attribution['page']['id'];
 		}
 

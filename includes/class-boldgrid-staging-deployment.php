@@ -815,50 +815,67 @@ class Boldgrid_Staging_Deployment {
 	 * @return boolean
 	 */
 	public function switch_option( $option ) {
-		/**
-		 * ********************************************************************
-		 * Configure our vars
-		 * ********************************************************************
-		 */
+		switch( gettype( $option ) ) {
+			// Validate our array.
+			case 'array':
+				if (	! isset( $option['option_name'] ) ||
+						! isset( $option['production'] ) ||
+						! isset( $option['staging'] ) ) {
+					return false;
+				}
 
-		/**
-		 * If $option is an array
-		 *
-		 * $option['option_name'] = 'stylesheet';
-		 * $option['production'] = get_option( 'stylesheet' );
-		 * $option['staging'] = get_option( 'boldgrid_staging_stylesheet' );
-		 */
-		if ( is_array( $option ) ) {
-			if ( ! isset( $option['option_name'] ) || ! isset( $option['production'] ) ||
-				 ! isset( $option['staging'] ) ) {
+				break;
+
+			// Use our option name to get existing active / staging option values.
+			case 'string':
+				$tmp_option = array(
+					'option_name' => $option,
+					'production'  => get_option( $option ),
+					'staging'     => get_option( 'boldgrid_staging_' . $option )
+				);
+
+				$option = $tmp_option;
+
+				break;
+
+			// Anything else, abort.
+			default:
 				return false;
-			}
-		}/**
-		 * Else if $option is a string
-		 *
-		 * $option = 'blogname';
-		 */
-		elseif ( is_string( $option ) ) {
-			$tmp_option['option_name'] = $option;
-			$tmp_option['production'] = get_option( $option );
-			$tmp_option['staging'] = get_option( 'boldgrid_staging_' . $option );
-
-			$option = $tmp_option;
 		}
 
-		/**
-		 * ********************************************************************
-		 * Switch the options
-		 * ********************************************************************
+		/*
+		 * Switch the active / staging options.
+		 *
+		 * Switch only though if there is a staging version.
 		 */
-		// only switch if there is a staging version
 		if ( false !== $option['staging'] ) {
-
 			// Set the staging as production
 			update_option( $option['option_name'], $option['staging'] );
 
-			// Set the production as staging
-			update_option( 'boldgrid_staging_' . $option['option_name'], $option['production'] );
+			/*
+			 * Set the production option value as the staging option value.
+			 *
+			 * PLEASE NOTE:
+			 *
+			 * If you have an existing option, and then you update its value to false, the
+			 * option's value WILL NOT be false, it will be an empty string.
+			 *
+			 * So in this scenario:
+			 * 1. update_option( 'cow', 5 );
+			 * 2. update_option( 'cow', false );
+			 * You would expect 'cow' to be false, but instead it will be null / an empty string.
+			 *
+			 * Based on the above information, IF our production value is false, simply delete the
+			 * option (which will return false anyways because it does not exists). IF we tried
+			 * updating it to false, it wouldn't work as expected.
+			 */
+			$option_name = 'boldgrid_staging_' . $option['option_name'];
+
+			if( false === $option['production'] ) {
+				delete_option( $option_name );
+			} else {
+				update_option( $option_name, $option['production'] );
+			}
 		}
 	}
 
