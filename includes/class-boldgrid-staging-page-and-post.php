@@ -241,7 +241,7 @@ span.permalink {
 		 * nav_menu_items are not actually staged, they're published. Only modify the query if we're
 		 * not looking at nav_menu_item's.
 		 */
-		if( 'nav-menus.php' === $pagenow && 'nav_menu_item' != $query->get( 'post_type' ) ) {
+		if ( 'nav-menus.php' === $pagenow && 'nav_menu_item' != $query->get( 'post_type' ) ) {
 			if ( $this->user_should_see_staging() ) {
 				$query->set( 'post_status', array ( 'staging' ) );
 			} else {
@@ -257,25 +257,17 @@ span.permalink {
 		 *
 		 * The below conditional fixes a bug in which active pages were returned, when instead only
 		 * staging pages should have been returned.
+		 *
+		 * The 2 $is_ variables below are set to help code readability. They are helping to determine
+		 * if we are querying for a list of pages to add to a menu, as in:
+		 * $_REQUEST['action'] = 'load-available-menu-items-customizer'
+		 * $_REQUEST['object'] = 'page'
 		 */
-		if (	// Is this an AJAX call?
-				$this->in_ajax &&
 
-				// Should the user see staging?
-				$this->user_should_see_staging() &&
+		$is_action_menu = ( isset( $_REQUEST['action'] ) && 'load-available-menu-items-customizer' === $_REQUEST['action'] );
+		$is_object_page = ( isset( $_REQUEST['object'] ) && 'page' === $_REQUEST['object'] );
 
-				/*
-				 * Are we querying for a list of pages to add to a menu?
-				*
-				* $_REQUEST['action'] = 'load-available-menu-items-customizer'
-				* $_REQUEST['object'] = 'page'
-				*/
-				isset( $_REQUEST['action'] ) &&
-				'load-available-menu-items-customizer' === $_REQUEST['action'] &&
-
-				isset( $_REQUEST['object'] ) &&
-				'page' === $_REQUEST['object']
-		) {
+		if ( $this->in_ajax && $this->user_should_see_staging() && $is_action_menu && $is_object_page ) {
 				$query->set( 'post_status', array( 'staging' ) );
 
 				return;
