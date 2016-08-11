@@ -20,6 +20,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
+= 1.2.1 In progress =
+* Bug fix:		JIRA WPB-2235	Only send staged site promotion to active if was built with Inspirations.
+
 = 1.2 =
 * Bug fix:		JIRA WPB-2124	Customizer's list of pages to add to a menu are always active pages.
 * Bug fix:		JIRA WPB-2134	Staging's boldgrid_attribution option and 'Uninitialized string offset' Notice.

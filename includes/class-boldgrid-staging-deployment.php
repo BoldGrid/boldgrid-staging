@@ -116,22 +116,25 @@ class Boldgrid_Staging_Deployment {
 	 * @since 1.0.6
 	 */
 	protected function update_feedback_info() {
-		// Get BoldGrid settings:
+		// Get BoldGrid settings.
 		$options = get_option( 'boldgrid_settings' );
 
-		// Get feedback option:
-		$boldgrid_feedback_optout = isset( $options['boldgrid_feedback_optout'] ) ? $options['boldgrid_feedback_optout'] : '0';
+		// Get feedback option.
+		$boldgrid_feedback_optout = (
+			isset( $options['boldgrid_feedback_optout'] ) ?
+			$options['boldgrid_feedback_optout'] : '0'
+		);
 
-		// If allowed, then update the feedback info:
-		if ( ! $boldgrid_feedback_optout ) {
-			// Get the current feedback data:
+		// Get the build profile id for the promoted site.
+		$boldgrid_install_options = get_option( 'boldgrid_install_options' );
+		$build_profile_id = isset( $boldgrid_install_options['build_profile_id'] ) ? $boldgrid_install_options['build_profile_id'] : null;
+
+		// If allowed, then update the feedback info.
+		if ( ! $boldgrid_feedback_optout && false === empty( $build_profile_id ) ) {
+			// Get the current feedback data.
 			$feedback_data = get_option( 'boldgrid_feedback' );
 
-			// Get the build profile id for the promoted site:
-			$boldgrid_install_options = get_option( 'boldgrid_install_options' );
-			$build_profile_id = isset( $boldgrid_install_options['build_profile_id'] ) ? $boldgrid_install_options['build_profile_id'] : null;
-
-			// Insert new data:
+			// Insert new data.
 			$feedback_data[] = array (
 				'type' => 'build_profile_feedback',
 				'timestamp' => date( 'Y-m-d H:i:s' ),
@@ -139,7 +142,7 @@ class Boldgrid_Staging_Deployment {
 				'action' => 'promoted'
 			);
 
-			// Save data:
+			// Save data.
 			update_option( 'boldgrid_feedback', $feedback_data );
 		}
 	}
