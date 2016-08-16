@@ -18,7 +18,7 @@ IMHWPB.ScreenIdEditPage = function(configs) {
 	});
 
 	/**
-	 * 
+	 *
 	 */
 	this.append_permalink_to_titles = function() {
 		/*
@@ -42,7 +42,7 @@ IMHWPB.ScreenIdEditPage = function(configs) {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.copy_to_post_status = function(e) {
 		var data = {
@@ -64,7 +64,7 @@ IMHWPB.ScreenIdEditPage = function(configs) {
 	/**
 	 * When a user clicks 'view' under a page, we need to make sure their
 	 * staging version matches the page status.
-	 * 
+	 *
 	 * For example, if they want to 'view' a staging page, we need to make sure
 	 * the front end is staging, and vice versa.
 	 */

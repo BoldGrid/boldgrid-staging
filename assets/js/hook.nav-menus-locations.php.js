@@ -14,7 +14,7 @@ IMHWPB.StagingNavMenusLocations = function() {
 	});
 
 	/**
-	 * 
+	 *
 	 */
 	this.display_locations_warning = function() {
 		var warning = "<p><strong style='color:red;'>Please note</strong>: "

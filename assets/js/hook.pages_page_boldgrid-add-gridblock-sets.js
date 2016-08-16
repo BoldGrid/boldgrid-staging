@@ -2,7 +2,7 @@ var BoldGrid_Staging = BoldGrid_Staging || {};
 
 /**
  * Stage blog / reading settings.
- * 
+ *
  * @since 1.0.7
  */
 BoldGrid_Staging.AdminPageAddGridBlockSet = function($) {
@@ -14,7 +14,7 @@ BoldGrid_Staging.AdminPageAddGridBlockSet = function($) {
 
 	/**
 	 * Add "Active / Staging" navigation to the top of the page.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.add_navigation = function() {
@@ -51,7 +51,7 @@ BoldGrid_Staging.AdminPageAddGridBlockSet = function($) {
 
 	/**
 	 * Init.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.init = function() {
@@ -64,7 +64,7 @@ BoldGrid_Staging.AdminPageAddGridBlockSet = function($) {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.getParameterByName = function(name) {
 		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

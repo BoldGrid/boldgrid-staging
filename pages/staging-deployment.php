@@ -122,9 +122,9 @@ $boldgrid_staging_stylesheet = get_option( 'boldgrid_staging_stylesheet' );
 						<li>Do nothing (in normal circumstances, a 404 error will be seen
 							by users).</li>
 					</ul>
-				
+
 				<?php echo $this->renaming_pages_and_posts(); ?>
-				
+
 			</div>
 
 			</div>
@@ -135,11 +135,11 @@ $boldgrid_staging_stylesheet = get_option( 'boldgrid_staging_stylesheet' );
 
 					<input type='hidden' name='action' id='action'
 						value='launch_staging' />
-					
+
 				<?php wp_nonce_field( 'launch_staging' ); ?>
-					
+
 				<?php submit_button( 'Launch Staging!', 'primary', 'submit', false ); ?>
-				
+
 			</div>
 
 			</div>

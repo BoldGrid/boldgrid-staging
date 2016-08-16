@@ -38,23 +38,23 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Class: Boldgrid_Inspirations_GridBlock_Sets_Kitchen_Sink.
 		'boldgrid_inspirations_fetching_kitchen_sink_status',
 		'_transient_boldgrid_inspirations_kitchen_sink',
-		'_transient_timeout_boldgrid_inspirations_kitchen_sink' 
+		'_transient_timeout_boldgrid_inspirations_kitchen_sink'
 	);
-	
+
 	/**
 	 */
 	public function __construct() {
 		parent::__construct();
-		
+
 		// Are we in the customizer?
 		$this->is_customizer = ( isset( $_REQUEST['wp_customize'] ) and
 			 'on' == $_REQUEST['wp_customize'] ) ? true : false;
-		
+
 		// Is this the first call from the customizer?
 		$this->is_first_customizer_preview = ( isset( $_REQUEST['customize_messenger_channel'] ) and
 			 'preview-0' == $_REQUEST['customize_messenger_channel'] ) ? true : false;
 	}
-	
+
 	/**
 	 * Add hooks/actions
 	 */
@@ -62,115 +62,115 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Add actions for blogname:
 		add_action( 'pre_option_blogname', array (
 			$this,
-			'blogname_pre_option' 
+			'blogname_pre_option'
 		) );
-		
-		add_action( 'pre_update_option_blogname', 
+
+		add_action( 'pre_update_option_blogname',
 			array (
 				$this,
-				'blogname_pre_option_update' 
+				'blogname_pre_option_update'
 			), 10, 2 );
-		
+
 		// Add actions for blogdescription:
-		add_action( 'pre_option_blogdescription', 
+		add_action( 'pre_option_blogdescription',
 			array (
 				$this,
-				'blogdescription_pre_option' 
+				'blogdescription_pre_option'
 			) );
-		
-		add_action( 'pre_update_option_blogdescription', 
+
+		add_action( 'pre_update_option_blogdescription',
 			array (
 				$this,
-				'blogdescription_pre_option_update' 
+				'blogdescription_pre_option_update'
 			), 10, 2 );
-		
+
 		// Add actions for sidebars_widgets
-		add_action( 'pre_option_sidebars_widgets', 
+		add_action( 'pre_option_sidebars_widgets',
 			array (
 				$this,
-				'sidebars_widgets_pre_option' 
+				'sidebars_widgets_pre_option'
 			) );
-		
-		add_action( 'pre_update_option_sidebars_widgets', 
+
+		add_action( 'pre_update_option_sidebars_widgets',
 			array (
 				$this,
-				'sidebars_widgets_pre_option_update' 
+				'sidebars_widgets_pre_option_update'
 			), 10, 2 );
-		
+
 		// Add actions for theme_switched
-		add_action( 'pre_option_theme_switched', 
+		add_action( 'pre_option_theme_switched',
 			array (
 				$this,
-				'theme_switched_pre_option' 
+				'theme_switched_pre_option'
 			) );
-		
-		add_action( 'pre_update_option_theme_switched', 
+
+		add_action( 'pre_update_option_theme_switched',
 			array (
 				$this,
-				'theme_switched_pre_option_update' 
+				'theme_switched_pre_option_update'
 			), 10, 2 );
-		
+
 		// Add actions for theme_switched_via_customizer
-		add_action( 'pre_option_theme_switched_via_customizer', 
+		add_action( 'pre_option_theme_switched_via_customizer',
 			array (
 				$this,
-				'theme_switched_via_customizer_pre_option' 
+				'theme_switched_via_customizer_pre_option'
 			) );
-		
-		add_action( 'pre_update_option_theme_switched_via_customizer', 
+
+		add_action( 'pre_update_option_theme_switched_via_customizer',
 			array (
 				$this,
-				'theme_switched_via_customizer_pre_option_update' 
+				'theme_switched_via_customizer_pre_option_update'
 			), 10, 2 );
-		
+
 		// Fix issues caused by Staging / Customizer / sidebars_widgets.
-		add_filter( 'boldgrid_staging_pre_option_sidebars_widgets', 
+		add_filter( 'boldgrid_staging_pre_option_sidebars_widgets',
 			array (
 				$this,
-				'boldgrid_staging_pre_option_sidebars_widgets' 
+				'boldgrid_staging_pre_option_sidebars_widgets'
 			) );
-		
+
 		// Add action for id user is missing show_on_front settings:
-		add_action( 'admin_notices', 
+		add_action( 'admin_notices',
 			array (
 				$this,
-				'admin_notice_set_front_page_settings' 
+				'admin_notice_set_front_page_settings'
 			) );
-		
+
 		// Stage options defined in $this->options_to_stage.
 		// Options are staged by hooking into the 'pre_option' and 'pre_update_option' filters.
 		foreach ( $this->options_to_stage as $option ) {
 			add_action( 'pre_option_' . $option, array (
 				$this,
-				'pre_option' 
+				'pre_option'
 			) );
-			
-			add_action( 'pre_update_option_' . $option, 
+
+			add_action( 'pre_update_option_' . $option,
 				array (
 					$this,
-					'pre_update_option' 
+					'pre_update_option'
 				), 10, 2 );
-			
+
 			add_action( 'delete_option_' . $option, array (
 				$this,
-				'delete_option' 
+				'delete_option'
 			) );
 		}
 	}
-	
+
 	/**
 	 * Admin notice if staging has no front page
 	 */
 	public function admin_notice_set_front_page_settings() {
 		global $pagenow;
-		
+
 		// Only run this on the options-reading.php page where staging=1 and notice=no-front-page
 		if ( ! ( is_admin() && 'options-reading.php' == $pagenow && isset( $_GET['staging'] ) &&
 			 '1' == $_GET['staging'] && isset( $_GET['notice'] ) &&
 			 'no-front-page' == $_GET['notice'] ) ) {
 			return;
 		}
-		
+
 		?>
 <div class="updated">
 	<p>We noticed you were trying to visit the front page of your staging
@@ -180,46 +180,46 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 </div>
 <?php
 	}
-	
+
 	/**
 	 * Get WP Option for blogdescription
 	 *
-	 * @param string $content        	
+	 * @param string $content
 	 *
 	 * @return string
 	 */
 	public function blogdescription_pre_option( $content ) {
 		if ( $this->user_should_see_staging() ) {
 			$blogdescription = get_option( 'boldgrid_staging_blogdescription' );
-			
+
 			return $blogdescription;
 		}
-		
+
 		return $content;
 	}
-	
+
 	/**
 	 * Set WP Option for blogdescription
 	 *
-	 * @param string $new_value        	
-	 * @param string $old_value        	
+	 * @param string $new_value
+	 * @param string $old_value
 	 *
 	 * @return string
 	 */
 	public function blogdescription_pre_option_update( $new_value, $old_value ) {
 		if ( $this->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_blogdescription', $new_value );
-			
+
 			return $old_value;
 		}
-		
+
 		return $new_value;
 	}
-	
+
 	/**
 	 * Get WP Option for blogname
 	 *
-	 * @param string $content        	
+	 * @param string $content
 	 *
 	 * @return string
 	 */
@@ -228,28 +228,28 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 			$blogname = get_option( 'boldgrid_staging_blogname' );
 			return $blogname;
 		}
-		
+
 		return $content;
 	}
-	
+
 	/**
 	 * Set WP Option for blogname
 	 *
-	 * @param string $new_value        	
-	 * @param string $old_value        	
+	 * @param string $new_value
+	 * @param string $old_value
 	 *
 	 * @return string
 	 */
 	public function blogname_pre_option_update( $new_value, $old_value ) {
 		if ( $this->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_blogname', $new_value );
-			
+
 			return $old_value;
 		}
-		
+
 		return $new_value;
 	}
-	
+
 	/**
 	 * Apply user's Customizer changes to allow for correct preview.
 	 *
@@ -262,22 +262,22 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * wp-includes/class-wp-customize-widgets.php was not helpful.
 	 *
 	 * @since 1.0.2
-	 *       
+	 *
 	 * @param array $sidebars_widgets
 	 *        	Example $sidebars_widgets: http://pastebin.com/bRBzvMbR
-	 *        	
+	 *
 	 * @return array $sidebars_widgets
 	 */
 	public function boldgrid_staging_pre_option_sidebars_widgets( $sidebars_widgets ) {
 		// Example $customized: http://pastebin.com/0euMC9kj
-		$customized = ( isset( $_REQUEST['customized'] ) ) ? json_decode( 
+		$customized = ( isset( $_REQUEST['customized'] ) ) ? json_decode(
 			stripslashes( $_REQUEST['customized'] ) ) : null;
-		
+
 		// If we don't have any customizations, abort.
 		if ( empty( $customized ) ) {
 			return $sidebars_widgets;
 		}
-		
+
 		// Loop through all of the customizations:
 		foreach ( $customized as $k => $widgets_in_this_sidebar ) {
 			// Not all customizations are in regard to widgets.
@@ -289,15 +289,15 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 				$sidebar_with_brackets = substr( $k, strlen( 'sidebars_widgets[' ) - 1 );
 				// Example $sidebar: boldgrid-widget-1
 				$sidebar = trim( $sidebar_with_brackets, '[]' );
-				
+
 				// Update $sidebars_widgets with the new settings supplied from the Customizer.
 				$sidebars_widgets[$sidebar] = $widgets_in_this_sidebar;
 			}
 		}
-		
+
 		return $sidebars_widgets;
 	}
-	
+
 	/**
 	 * Delete a staged option rather than an active option.
 	 *
@@ -311,19 +311,19 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Get the name of the option, based upon the current filter.
 		// For example, convert 'pre_option_blog_public' to 'blog_public'.
 		$option = substr( current_filter(), strlen( 'delete_option_' ) );
-		
+
 		if ( $this->user_should_see_staging() ) {
 			$staged_option = get_option( 'boldgrid_staging_' . $option );
-			
+
 			delete_option( $staged_option );
 		}
 	}
-	
+
 	/**
 	 * Return a staged option rather than an active option.
 	 *
 	 * @since 1.0.7
-	 *       
+	 *
 	 * @return mixed If an option is found, the return type will that of the existing option, which
 	 *         varies.
 	 */
@@ -331,10 +331,10 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Get the name of the option, based upon the current filter.
 		// For example, convert 'pre_option_blog_public' to 'blog_public'.
 		$option = substr( current_filter(), strlen( 'pre_option_' ) );
-		
+
 		if ( $this->user_should_see_staging() ) {
 			$staged_option = get_option( 'boldgrid_staging_' . $option );
-			
+
 			// Allow for custom values to be returned for specific options.
 			if ( false === $staged_option ) {
 				switch ( $option ) {
@@ -346,18 +346,18 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 						break;
 				}
 			}
-			
+
 			return $staged_option;
 		} else {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Update a staged option rather than an active option.
 	 *
 	 * @since 1.0.7
-	 *       
+	 *
 	 * @param mixed $new_value
 	 *        	The new value of the option.
 	 * @param mixed $old_value
@@ -368,10 +368,10 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Get the name of the option based upon the current filter.
 		// For example, convert 'pre_option_blog_public' to 'blog_public'.
 		$option = substr( current_filter(), strlen( 'pre_option_update_' ) );
-		
+
 		if ( $this->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_' . $option, $new_value );
-			
+
 			// Why are we returning the old_value?
 			//
 			// If update_option()'s call to this filter returns the $old_value,
@@ -384,51 +384,51 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 			// 2. OPTION is updated by update_option().
 			return $old_value;
 		}
-		
+
 		return $new_value;
 	}
-	
+
 	/**
 	 * Get WP Option for sidebars_widgets
 	 *
-	 * @param string $content        	
+	 * @param string $content
 	 *
 	 * @return string
 	 */
 	public function sidebars_widgets_pre_option( $content ) {
 		if ( $this->user_should_see_staging() ) {
 			$sidebars_widgets = get_option( 'boldgrid_staging_sidebars_widgets' );
-			
-			return apply_filters( 'boldgrid_staging_pre_option_sidebars_widgets', 
+
+			return apply_filters( 'boldgrid_staging_pre_option_sidebars_widgets',
 				$sidebars_widgets );
 		}
-		
+
 		return $content;
 	}
-	
+
 	/**
 	 * Set WP Option for sidebars_widgets
 	 *
-	 * @param string $new_value        	
-	 * @param string $old_value        	
+	 * @param string $new_value
+	 * @param string $old_value
 	 *
 	 * @return string
 	 */
 	public function sidebars_widgets_pre_option_update( $new_value, $old_value ) {
 		if ( $this->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_sidebars_widgets', $new_value );
-			
+
 			return $old_value;
 		}
-		
+
 		return $new_value;
 	}
-	
+
 	/**
 	 * Get staging version of theme_switched option.
 	 *
 	 * @since 1.0.4
-	 *       
+	 *
 	 * @return false If the user should not see staging, return false.
 	 * @return mixed The value of the boldgrid_staging_theme_switched option.
 	 */
@@ -439,12 +439,12 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Set staging version of theme_switched option.
 	 *
 	 * @since 1.0.4
-	 *       
+	 *
 	 * @param mixed $new_value
 	 *        	The new value for the theme_switched option.
 	 * @param mixed $old_value
@@ -454,18 +454,18 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	public function theme_switched_pre_option_update( $new_value, $old_value ) {
 		if ( $this->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_theme_switched', $new_value );
-			
+
 			return $old_value;
 		}
-		
+
 		return $new_value;
 	}
-	
+
 	/**
 	 * Get staging version of theme_switched_via_customizer option.
 	 *
 	 * @since 1.0.4
-	 *       
+	 *
 	 * @return false If the user should not see staging, return false.
 	 * @return mixed The value of the theme_switched_via_customizer option.
 	 */
@@ -476,12 +476,12 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Set staging version of theme_switched_via_customizer option.
 	 *
 	 * @since 1.0.4
-	 *       
+	 *
 	 * @param mixed $new_value
 	 *        	The new value for the theme_switched_via_customizer option.
 	 * @param mixed $old_value
@@ -491,10 +491,10 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	public function theme_switched_via_customizer_pre_option_update( $new_value, $old_value ) {
 		if ( $this->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_theme_switched_via_customizer', $new_value );
-			
+
 			return $old_value;
 		}
-		
+
 		return $new_value;
 	}
 }

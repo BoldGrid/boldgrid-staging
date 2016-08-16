@@ -2,7 +2,7 @@ var BoldGrid_Staging = BoldGrid_Staging || {};
 
 /**
  * Stage blog / reading settings.
- * 
+ *
  * @since 1.0.7
  */
 BoldGrid_Staging.StagingSettingsReading = function($) {
@@ -14,7 +14,7 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 
 	/**
 	 * Add "Active / Staging" navigation to the top of the page.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.add_navigation = function() {
@@ -37,11 +37,11 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 
 	/**
 	 * Is needle found within haystack?
-	 * 
+	 *
 	 * @since 1.0.7
-	 * 
+	 *
 	 * @link http://stackoverflow.com/questions/784012/javascript-equivalent-of-phps-in-array
-	 * 
+	 *
 	 * @param string
 	 *            needle
 	 * @param array
@@ -62,7 +62,7 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 
 	/**
 	 * Init.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.init = function() {
@@ -85,10 +85,10 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 
 	/**
 	 * Remove options on the page not staged.
-	 * 
+	 *
 	 * As of WordPress 4.4.2, we've staged all of options on this page. However,
 	 * future versions may have more settings that we have not yet staged.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.remove_options_not_staged = function() {
@@ -106,10 +106,10 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 
 	/**
 	 * Set self.input_names.
-	 * 
+	 *
 	 * What options are listed on this page? We loop through all of the
 	 * <input>'s on this page and add their 'name' to an array.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.set_input_names = function() {
@@ -124,10 +124,10 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 
 	/**
 	 * Update the action of the <form>.
-	 * 
+	 *
 	 * When we're working with Staging, we want to make sure we're submitting
 	 * the data to '?staging=1'.
-	 * 
+	 *
 	 * @since 1.0.7
 	 */
 	this.update_form_action = function() {
@@ -137,7 +137,7 @@ BoldGrid_Staging.StagingSettingsReading = function($) {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.getParameterByName = function(name) {
 		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

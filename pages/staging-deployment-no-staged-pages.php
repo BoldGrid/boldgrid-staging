@@ -7,13 +7,13 @@ if ( ! defined( 'WPINC' ) ) {
 	exit();
 }
 
-$link_to_tutorial = sprintf( '<a href="%s">%s</a>', 
-	esc_url( 
-		add_query_arg( 
+$link_to_tutorial = sprintf( '<a href="%s">%s</a>',
+	esc_url(
+		add_query_arg(
 			array (
 				'page' => 'boldgrid-tutorials',
 				'tab' => 'inspirations',
-				'tutorial' => '1' 
+				'tutorial' => '1'
 			), 'admin.php' ) ), esc_html__( 'click here', 'boldgrid' ) );
 ?>
 

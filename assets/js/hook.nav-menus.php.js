@@ -39,7 +39,7 @@ IMHWPB.StagingNavMenus = function() {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	this.getParameterByName = function(name) {
 		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

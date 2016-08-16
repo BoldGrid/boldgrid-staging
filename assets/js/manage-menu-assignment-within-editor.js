@@ -45,7 +45,7 @@ IMHWPB.StagingManageMenuAssignmentWithinEditor = function( $ ) {
 
 		/**
 		 * Show only one menu type (active or staging menus).
-		 * 
+		 *
 		 * We don't want to add an active page to a staging menu, and vice
 		 * versa. So, depending on what the selected_dev_group is, show
 		 * applicable menus.
@@ -72,18 +72,18 @@ IMHWPB.StagingManageMenuAssignmentWithinEditor = function( $ ) {
 
 		/**
 		 * On switch of post status, set default menu selection.
-		 * 
+		 *
 		 * This is only done when creating a new page, so we can properly
 		 * default the menu to 'primary'. If we're editing an existing page, we
 		 * won't default any menus.
-		 * 
+		 *
 		 * Scenario 1: Let's say you had it checked to add this new page to all
 		 * staging menus. Then you clicked 'Active' under 'Development Group'.
 		 * The staging menus with checkboxes would be hidden from view, but they
 		 * would still be checked. This would then add an active page to staging
 		 * menus, which is undesirable. In the event a user switches the page to
 		 * active, uncheck all staging menus.
-		 * 
+		 *
 		 * Scenario 2: By default, we want the primary menu selected. If we auto
 		 * checked both the active and staging primary menu, the new page would
 		 * be added to both. When a page is toggled between active / staging,

@@ -23,7 +23,7 @@ IMHWPB.Admin_Staging_Switcher = function() {
 	});
 
 	/**
-	 * 
+	 *
 	 */
 	this.move_visit_staging_site = function() {
 		var visit_staging = jQuery('li.admin_view_staging_site');
