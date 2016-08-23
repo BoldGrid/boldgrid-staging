@@ -20,7 +20,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
-= 1.2.1 In progress =
+= 1.2.1 =
 * Misc:			JIRA WPB-2256	Updated readme.txt for Tested up to: 4.6.
 * Rework:		JIRA WPB-1825	Formatting.
 * Bug fix:		JIRA WPB-2235	Only send staged site promotion to active if was built with Inspirations.
