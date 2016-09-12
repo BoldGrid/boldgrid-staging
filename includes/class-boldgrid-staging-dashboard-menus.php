@@ -477,7 +477,8 @@ class Boldgrid_Staging_Dashboard_Menus {
 	public function register_staging_menu_page() {
 		// Grab the BoldGrid core plugin's settings/options array for proper
 		// menu order based on user's preference:
-		$boldgrid_menu_options = get_option( 'boldgrid_settings' );
+		( $boldgrid_menu_options = get_site_option( 'boldgrid_settings' ) ) ||
+		( $boldgrid_menu_options = get_option( 'boldgrid_settings' ) );
 
 		// Check to see if a staging stylesheet is available
 		$boldgrid_detect_staging = get_option( 'boldgrid_staging_stylesheet' );

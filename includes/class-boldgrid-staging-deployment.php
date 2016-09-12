@@ -117,7 +117,8 @@ class Boldgrid_Staging_Deployment {
 	 */
 	protected function update_feedback_info() {
 		// Get BoldGrid settings.
-		$options = get_option( 'boldgrid_settings' );
+		( $options = get_site_option( 'boldgrid_settings' ) ) ||
+		( $options = get_option( 'boldgrid_settings' ) );
 
 		// Get feedback option.
 		$boldgrid_feedback_optout = (
