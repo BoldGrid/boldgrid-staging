@@ -406,6 +406,11 @@ span.permalink {
 	public function page_pre_get_posts( $query ) {
 		$post_type = $query->get( 'post_type' );
 
+		// If post_type isn't found abort.
+		if ( empty( $post_type ) ) {
+			return;
+		}
+
 		/**
 		 * ********************************************************************
 		 * If in the Dashboard:
