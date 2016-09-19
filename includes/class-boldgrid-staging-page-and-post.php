@@ -407,6 +407,11 @@ span.permalink {
 		$post_type = $query->get( 'post_type' );
 
 		/**
+		 * Below this line we call $query->is_front_page(), which in turn calls is_page(),
+		 * which returns null when there is no query object.
+		 *
+		 * One example is wooCommerce, which get_queried_object_returns null on a product page.
+		 *
 		 * Certain queries don't return with a post_type param, such as wooCommerce in
 		 * pre_get_posts, so if post_type is empty, we'll just return before attempting
 		 * to do anything with it yet.
