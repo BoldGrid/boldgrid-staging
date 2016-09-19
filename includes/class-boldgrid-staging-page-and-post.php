@@ -406,7 +406,11 @@ span.permalink {
 	public function page_pre_get_posts( $query ) {
 		$post_type = $query->get( 'post_type' );
 
-		// If post_type isn't found abort.
+		/**
+		 * Certain queries don't return with a post_type param, such as wooCommerce in
+		 * pre_get_posts, so if post_type is empty, we'll just return before attempting
+		 * to do anything with it yet.
+		 */
 		if ( empty( $post_type ) ) {
 			return;
 		}
