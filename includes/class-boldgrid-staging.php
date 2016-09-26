@@ -81,7 +81,6 @@ class Boldgrid_Staging {
 	 * Add WordPress hooks.
 	 */
 	public function add_hooks() {
-		error_log( 'adding hooks');
 		if ( is_admin() ) {
 			// Check PHP and WordPress versions for compatibility:
 			add_action( 'admin_init', array (
