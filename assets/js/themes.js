@@ -89,20 +89,14 @@ IMHWPB.StagingThemes = function( $ ) {
 			// Add "Unstage" button before "Customize" button.
 			self.$activeTheme.find( '.customize' ).before( unstageThemeButton );
 		} else {
+			// Add the active class.
+			$stagedThemeContainer.addClass( 'active' )
 
-			console.log( 'here' );
-
+			// Add 'Staged:' before the theme name
 			$stagedThemeContainer
-				// Add the active class.
-				.addClass( 'active' )
-				// Move our Staging theme container after our Active theme.
-				.insertAfter( self.$activeTheme );
-
-
-			$stagedThemeContainer
-				// Add 'Staged:' before the theme name
 				.children('.theme-name').prepend( '<span>' + BoldGridStagingThemes.Staged + ':</span> ');
 
+			// Add our "unstage" button.
 			$stagedThemeContainer.find( '.activate' ).after( unstageThemeButton );
 		}
 	};
