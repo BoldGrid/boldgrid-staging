@@ -26,14 +26,14 @@ IMHWPB.StagingThemes = function( $ ) {
 	 *
 	 * @since 1.2.3
 	 */
-	self.$activeTheme;
+	self.$activeTheme = null;
 
 	/**
 	 * Active stylesheet.
 	 *
 	 * @since 1.2.3
 	 */
-	self.activeTheme;
+	self.activeTheme = null;
 
 	$(function() {
 		self.init();
