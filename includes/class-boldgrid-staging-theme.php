@@ -19,11 +19,23 @@ if ( ! defined( 'WPINC' ) ) {
  * BoldGrid Theme Staging class
  */
 class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
+
+	/**
+	 * The staged stylesheet.
+	 *
+	 * @since 1.2.3
+	 * @access public
+	 * @var string $staging_stylesheet
+	 */
+	public $staging_stylesheet;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		parent::__construct();
+
+		$this->staging_stylesheet = get_option( 'boldgrid_staging_stylesheet' );
 	}
 
 	/**
@@ -80,11 +92,6 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 		 * ********************************************************************
 		 */
 		if ( is_admin() ) {
-			add_action( 'wp_ajax_get_staging_stylesheet',
-				array (
-					$this,
-					'get_staging_stylesheet_callback'
-				) );
 
 			add_action( 'wp_ajax_set_staged_theme',
 				array (
@@ -132,6 +139,8 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 					$this,
 					'finished_updating_staging_mods'
 				), 99 );
+
+			add_filter( 'wp_prepare_themes_for_js', array( $this, 'filter_wp_prepare_themes_for_js' ) );
 		} else {
 			// WP Hooks:
 			add_action( 'wp_enqueue_scripts',
@@ -405,17 +414,6 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	}
 
 	/**
-	 * Get WP Option stylesheet and print it
-	 */
-	public function get_staging_stylesheet_callback() {
-		global $wpdb; // this is how you get access to the database
-
-		echo get_option( 'boldgrid_staging_stylesheet' );
-
-		wp_die(); // this is required to terminate immediately and return a proper response
-	}
-
-	/**
 	 * Override theme framework css output
 	 *
 	 * @param array $boldgrid_framework_configs
@@ -442,6 +440,62 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 */
 	public function updating_staging_mods() {
 		$this->updating_staging_theme_mods = true;
+	}
+
+	/**
+	 * Filter for wp_prepare_themes_for_js.
+	 *
+	 * @since 1.2.3
+	 *
+	 * @global string $pagenow;
+	 */
+	public function filter_wp_prepare_themes_for_js( $prepared_themes ) {
+
+		/*
+		 * Move our staging theme to the top of the array.
+		 *
+		 * Let's say we have 100 themes. By default they're sorted alphabetically, and only the first
+		 * few are loaded. Let's also say our staged theme is the 100th theme, the last one.
+		 *
+		 * If we go to the themes page in the dashboard, our staging theme will not show until it is
+		 * lazy loaded. This is not what we want to have happen, we want the staged theme to show
+		 * right away. To resolve this, we'll move the staged theme to the beginning of the array.
+		 *
+		 * The below code is essentially setting the staged theme as the second element in the
+		 * $prepared_themes array.
+		 */
+
+		global $pagenow;
+
+		// We only want this filter to run on themes.php. If we're not on that page, abort.
+		if ( 'themes.php' !== $pagenow ) {
+			return $prepared_themes;
+		}
+
+		// If we don't have a staging stylesheet, abort.
+		if( false === $this->staging_stylesheet ) {
+			return $prepared_themes;
+		}
+
+		// Create a copy of the first theme, which is the active theme.
+		reset( $prepared_themes );
+		$first_theme = current( $prepared_themes );
+		$first_theme_key = key( $first_theme );
+
+		// Create a copy of our staged theme.
+		$staged_theme = $prepared_themes[ $this->staging_stylesheet ];
+
+		// Remove our active and staged theme from the array, we'll add it back later.
+		unset( $prepared_themes[ $first_theme_key ] );
+		unset( $prepared_themes[ $this->staging_stylesheet ] );
+
+		// Add our active and staged theme to the begining of the array.
+		$prepared_themes = array(
+			$first_theme_key => $first_theme,
+			$this->staging_stylesheet => $staged_theme,
+			) + $prepared_themes;
+
+		return $prepared_themes;
 	}
 
 	/**

@@ -81,6 +81,7 @@ class Boldgrid_Staging {
 	 * Add WordPress hooks.
 	 */
 	public function add_hooks() {
+		error_log( 'adding hooks');
 		if ( is_admin() ) {
 			// Check PHP and WordPress versions for compatibility:
 			add_action( 'admin_init', array (
@@ -190,9 +191,23 @@ class Boldgrid_Staging {
 	public function enqueue_scripts( $hook ) {
 		switch ( $hook ) {
 			case 'themes.php' :
-				wp_enqueue_script( 'hook.themes.php.js',
-					$this->plugins_url . 'assets/js/hook.themes.php.js', array (),
-					BOLDGRID_STAGING_VERSION, true );
+				wp_enqueue_script( 'themes.js',
+					$this->plugins_url . 'assets/js/themes.js',
+					array (),
+					BOLDGRID_STAGING_VERSION,
+					true
+				);
+
+				wp_localize_script( 'themes.js', 'BoldGridStagingThemes', array(
+					'Active'              => __( 'Active', 'boldgrid-staging' ),
+					'errorStagingTheme'   => __( 'There was an error when trying to stage this theme. Please try again.', 'boldgrid-staging' ),
+					'errorUnstagingTheme' => __( 'There was an error unstaging this theme. Please try again.', 'boldgrid-staging' ),
+					'stagingStylesheet'   => get_option( 'boldgrid_staging_stylesheet' ),
+					'Stage'               => __( 'Stage', 'boldgrid-staging' ),
+					'Staged'              => __( 'Staged', 'boldgrid-staging' ),
+					'Unstage'             => __( 'Unstage', 'boldgrid-staging' ),
+				));
+				break;
 
 			case 'nav-menus.php' :
 				wp_enqueue_script( 'hook.nav-menus.php.js',

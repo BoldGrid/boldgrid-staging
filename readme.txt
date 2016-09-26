@@ -20,11 +20,14 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
+= 1.2.3 In progress =
+* Bug fix:		JIRA WPB-2075	If themes are lazy loaded, staging button does not appear on later themes.
+
 = 1.2.2 =
 * Misc:			JIRA WPB-2344	Updated readme.txt for Tested up to 4.6.1.
 * Bug fix:		JIRA WPB-2336	Load BoldGrid settings from the correct WP option (site/blog).
-* Update:		JIRA WPB-2378 Set the version constant from plugin file.
-* Bug fix:		If a post type isn't found, then don't query.
+* Update:		JIRA WPB-2378	Set the version constant from plugin file.
+* Bug fix:						If a post type isn't found, then don't query.
 
 = 1.2.1 =
 * Misc:			JIRA WPB-2256	Updated readme.txt for Tested up to: 4.6.
@@ -90,7 +93,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 = 1.0.3 =
 * Bug fix:		JIRA WPB-1422	Customize links showing in wrong menu...
 * New feature	JIRA WPB-1439	Tie into Theme Framework's filter for creating attribution page link and fix it for Staging.
-* Bug fix:	JIRA WPB-1428   Live Preview of staged theme throws JS error.
+* Bug fix:		JIRA WPB-1428   Live Preview of staged theme throws JS error.
 * Bug fix:		JIRA WPB-1446	Properly rename a staged page when it ends with '-staging-(a number)'
 
 = 1.0.2 =
