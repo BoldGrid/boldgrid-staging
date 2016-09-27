@@ -20,6 +20,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
+= 1.2.4 In progress =
+* Bug fix:		JIRA WPB-2425	Link to Staging tutorials needs to be removed.
+
 = 1.2.3 =
 * Bug fix:		JIRA WPB-2075	If themes are lazy loaded, staging button does not appear on later themes.
 
