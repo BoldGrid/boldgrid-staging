@@ -7,9 +7,11 @@ if ( ! defined( 'WPINC' ) ) {
 	exit();
 }
 
-$link_to_tutorial = sprintf( '<a href="%s" target="_blank">%s</a>',
+$link_to_tutorial = sprintf(
+	'<a href="%s" target="_blank">%s</a>',
 	'https://www.boldgrid.com/support/getting-to-know-boldgrid/understanding-active-vs-staging-in-boldgrid/',
-	esc_html__( 'click here', 'boldgrid' ) );
+	esc_html__( 'click here', 'boldgrid-staging' )
+);
 ?>
 
 <div class='wrap'>
