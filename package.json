@@ -1,0 +1,30 @@
+{
+  "name": "boldgrid-staging",
+  "version": "1.0.0",
+  "description": "BoldGrid Staging WordPress Plugin",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "postinstall" : "gulp",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boldgrid/boldgrid-staging.git"
+  },
+  "keywords": [
+    "boldgrid"
+  ],
+  "author": "The BoldGrid Team",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/boldgrid/boldgrid-staging/issues"
+  },
+  "homepage": "https://github.com/boldgrid/boldgrid-staging#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-inject-string": "^1.1.0",
+    "gulp-readme-to-markdown": "^0.2.0"
+  }
+}
