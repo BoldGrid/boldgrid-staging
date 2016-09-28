@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "postinstall" : "gulp",
+    "postinstall" : "gulp"
   },
   "repository": {
     "type": "git",
