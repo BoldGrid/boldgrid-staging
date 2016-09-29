@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-GPL--2.0%2B-orange.svg)](https://raw.githubusercontent.com/BoldGrid/boldgrid-inspirations/master/LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--2.0%2B-orange.svg)](https://raw.githubusercontent.com/BoldGrid/boldgrid-staging/master/LICENSE)
 [![PHP Version](https://img.shields.io/badge/PHP-5.3%2B-blue.svg)](https://php.net)
 
 # BoldGrid Staging #
@@ -22,6 +22,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 2. Activate the plugin through the Plugins menu in WordPress.
 
 ## Changelog ##
+
+### 1.2.5 ###
+* Update:		JIRA WPB-2437	Button.css needs to compile after updates and work with staging.
 
 ### 1.2.4 ###
 * Bug fix:		JIRA WPB-2425	Link to Staging tutorials needs to be removed.
