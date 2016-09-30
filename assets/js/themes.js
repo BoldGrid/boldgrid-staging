@@ -90,7 +90,7 @@ IMHWPB.StagingThemes = function( $ ) {
 			self.$activeTheme.find( '.customize' ).before( unstageThemeButton );
 		} else {
 			// Add the active class.
-			$stagedThemeContainer.addClass( 'active' )
+			$stagedThemeContainer.addClass( 'active' );
 
 			// Add 'Staged:' before the theme name
 			$stagedThemeContainer
@@ -101,18 +101,45 @@ IMHWPB.StagingThemes = function( $ ) {
 		}
 	};
 
-	/*
+	/**
+	 * @summary Remove "Deploy Staging" from theme actions.
+	 *
+	 * Why is it added in the first place? Because of wp-admin/themes.php. Essentially in that file
+	 * WP scans the menu items under the Appearance tab, and adds certain links to theme actions.
+	 *
+	 * @since 1.2.6
+	 */
+	this.removeDeployStaging = function() {
+		// Grab the "Deploy Staging" text from the menu.
+		var deployStaging = $( 'li.wp-menu-open' ).find( 'a[href*="boldgrid-staging"]' ).text();
+
+		// Find the button based off that text and remove it.
+		$( '.theme-actions .active-theme a:contains("' + deployStaging + '")').remove();
+	};
+
+	/**
 	 * @summary Init.
 	 *
-	 * @since xxx
+	 * @since 1.2.5
 	 */
 	this.init = function() {
 		self.$activeTheme = $( '.theme.active' );
 
 		self.activeTheme = self.$activeTheme.attr( 'data-slug' );
 
-
 		self.initStagedContainer();
+
+		/*
+		 * Remove "Deploy Staging" from theme actions.
+		 *
+		 * We remove it on page load and when the user clicks to see theme details of the active
+		 * theme. We remove it on page load because if you're looking at theme details and refresh
+		 * the page, the modal pops up when the page reloads.
+		 */
+		self.removeDeployStaging();
+		self.$activeTheme.on( 'click', function() {
+			self.removeDeployStaging();
+		});
 
 		// If the active theme is not also staged theme, add a "Stage" button to the active theme.
 		if ( self.stagedTheme != self.activeTheme ) {
