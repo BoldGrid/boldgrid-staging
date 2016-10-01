@@ -431,14 +431,17 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 			$boldgrid_framework_configs['customizer-options']['colors']['settings']['output_css_name'] = $output_name;
 
 			// Update the buttons css file.
-			$buttons_file = $boldgrid_framework_configs['components']['buttons']['css_file'];
-			$base = basename( $buttons_file, '.css' );
-			$buttons_file = str_ireplace( $base, 'staging-buttons', $buttons_file );
-			$boldgrid_framework_configs['components']['buttons']['css_file'] = $buttons_file;
+			if ( isset( $boldgrid_framework_configs['components']['buttons']['css_file'] )
+				&& isset( $boldgrid_framework_configs['components']['buttons']['css_uri'] ) ) {
+					$buttons_file = $boldgrid_framework_configs['components']['buttons']['css_file'];
+					$base = basename( $buttons_file, '.css' );
+					$buttons_file = str_ireplace( $base, 'staging-buttons', $buttons_file );
+					$boldgrid_framework_configs['components']['buttons']['css_file'] = $buttons_file;
 
-			$buttons_uri = $boldgrid_framework_configs['components']['buttons']['css_uri'];
-			$buttons_uri = str_ireplace( $base, 'staging-buttons', $buttons_uri );
-			$boldgrid_framework_configs['components']['buttons']['css_uri'] = $buttons_uri;
+					$buttons_uri = $boldgrid_framework_configs['components']['buttons']['css_uri'];
+					$buttons_uri = str_ireplace( $base, 'staging-buttons', $buttons_uri );
+					$boldgrid_framework_configs['components']['buttons']['css_uri'] = $buttons_uri;
+			}
 
 			// Flag for staging.
 			$boldgrid_framework_configs['customizer-options']['colors']['settings']['staging'] = true;
