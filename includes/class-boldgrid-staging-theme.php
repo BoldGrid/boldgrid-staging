@@ -238,6 +238,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 			$new_staged_stylesheet_theme_mods = get_option( $option_name );
 
 			$new_staged_stylesheet_theme_mods['nav_menu_locations'] = $current_staged_nav_menu_locations;
+			$new_staged_stylesheet_theme_mods['force_scss_recompile']['staging'] = true;
 
 			update_option( $option_name, $new_staged_stylesheet_theme_mods );
 

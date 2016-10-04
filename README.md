@@ -23,6 +23,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 ## Changelog ##
 
+### 1.2.6 In Progress ###
+* Bug fix:		JIRA WPB-2437	Fixing issue with compiling staging colors.
+
 ### 1.2.5 ###
 * Update:		JIRA WPB-2437	Button.css needs to compile after updates and work with staging.
 * Bug fix:		JIRA WPB-2424	'Deploy Staging' button appears when clicking on active theme.
