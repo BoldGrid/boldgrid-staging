@@ -153,7 +153,7 @@ IMHWPB.StagingThemes = function( $ ) {
 
 		// When clicking a "Stage" button, stage the theme.
 		$( '.themes' ).on( 'click', '.stage', function() {
-			self.stageTheme( $( this ).data( 'stylesheet' ) );
+			self.stageTheme( $( this ).attr( 'data-stylesheet' ) );
 		});
 
 		// When clicking an "Unstage" button, unstage the theme.

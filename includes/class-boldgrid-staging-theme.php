@@ -199,7 +199,11 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * What we will do below is copy the old theme's menu assignment to the new theme.
 	 */
 	public function set_staged_theme_callback() {
-		global $wpdb;
+
+		// If we did not pass in a stylesheet, abort.
+		if( ! isset( $_POST['stylesheet'] ) ) {
+			wp_die();
+		}
 
 		// COPY NAV_MENU LOCATIONS (1/2)
 		$current_staged_stylesheet = get_option( 'boldgrid_staging_stylesheet' );
@@ -213,8 +217,16 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 		}
 
 		$stylesheet = sanitize_text_field( $_POST['stylesheet'] );
-		// if we have a stylesheet and it's not empty...
-		if ( ! empty( $stylesheet ) ) {
+
+		$theme = wp_get_theme( $stylesheet );
+
+		/*
+		 * Check to see that our theme is valid.
+		 *
+		 * Due to a JS issue, $_POST['stylesheet'] could be 'undefined'. In that case, we wouldn't
+		 * want to set 'undefined' as the staged theme.
+		 */
+		if ( $theme->exists() ) {
 			// Update both the stylesheet and template STAGING options
 			update_option( 'boldgrid_staging_stylesheet', $stylesheet );
 
@@ -487,15 +499,24 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 			return $prepared_themes;
 		}
 
-		// If we don't have a staging stylesheet, abort.
-		if( false === $this->staging_stylesheet ) {
+		/*
+		 * Ensure we have a valid staging theme.
+		 *
+		 * # Make sure $this->staging_stylesheet is not empty.
+		 * # Ensure wp_get_theme successfully fetches $this->staging_stylesheet.
+		 *
+		 * The empty check is required because passing null to wp_get_theme will return the current
+		 * active theme, which will trigger a false positive.
+		 */
+		$staged_theme = wp_get_theme( $this->staging_stylesheet );
+		if( empty( $this->staging_stylesheet ) || ! $staged_theme->exists() ) {
 			return $prepared_themes;
 		}
 
 		// Create a copy of the first theme, which is the active theme.
 		reset( $prepared_themes );
 		$first_theme = current( $prepared_themes );
-		$first_theme_key = key( $first_theme );
+		$first_theme_key = $first_theme['id'];
 
 		// Create a copy of our staged theme.
 		$staged_theme = $prepared_themes[ $this->staging_stylesheet ];
