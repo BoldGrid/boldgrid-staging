@@ -42,10 +42,10 @@ class Boldgrid_Staging_Dashboard_Menus {
 			// __( 'Active Site', 'boldgrid-staging' ),
 
 			// Page Title
-			__( 'Active Theme', 'boldgrid-staging' ),
+			__( 'Active Site', 'boldgrid-staging' ),
 
 			// Menu Title
-			__( 'Active Theme', 'boldgrid-staging' ),
+			__( 'Active Site', 'boldgrid-staging' ),
 
 			// Give users access to this feature if they are capable of editing
 			// theme options
@@ -384,10 +384,10 @@ class Boldgrid_Staging_Dashboard_Menus {
 			// __( 'Staged Site', 'boldgrid-staging' ),
 
 			// Page Title
-			__( 'Staged Theme', 'boldgrid-staging' ),
+			__( 'Staged Site', 'boldgrid-staging' ),
 
 			// Menu Title
-			__( 'Staged Theme', 'boldgrid-staging' ),
+			__( 'Staged Site', 'boldgrid-staging' ),
 
 			/**
 			 * // Give users access to this feature if they are capable of
