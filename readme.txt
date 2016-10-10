@@ -20,7 +20,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
-= 1.2.7 In progress =
+= 1.2.7 =
 *Update:		JIRA WPB-2491	Add 'Customize > Active Theme' navigation to Inspirations.
 
 = 1.2.6 =
