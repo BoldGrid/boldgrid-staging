@@ -12,6 +12,10 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 BoldGrid Staging is a standalone plugin to allow use of a staged website while keeping a live website intact during development.
 
+== Requirements ==
+
+* PHP 5.3 or higher.
+
 == Installation ==
 
 1. Upload the entire boldgrid-staging folder to the /wp-content/plugins/ directory.
@@ -19,6 +23,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 2. Activate the plugin through the Plugins menu in WordPress.
 
 == Changelog ==
+
+= 1.3.1 In progress =
+* Misc:			JIRA WPB-2503	Added plugin requirements to readme.txt file.
 
 = 1.3 =
 * Update:						Bump version.
