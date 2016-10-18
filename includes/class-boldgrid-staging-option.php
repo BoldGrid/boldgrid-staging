@@ -38,7 +38,8 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Class: Boldgrid_Inspirations_GridBlock_Sets_Kitchen_Sink.
 		'boldgrid_inspirations_fetching_kitchen_sink_status',
 		'_transient_boldgrid_inspirations_kitchen_sink',
-		'_transient_timeout_boldgrid_inspirations_kitchen_sink'
+		'_transient_timeout_boldgrid_inspirations_kitchen_sink',
+		'boldgrid_attribution_rebuild'
 	);
 
 	/**

@@ -106,6 +106,9 @@ function boldgrid_staging_init() {
 				'Boldgrid_Staging_Page_And_Post_Staging',
 				'prevent_public_from_seeing_staged_pages'
 			) );
+
+		// Visitors to the front end of the site, prevent them from accessing the attribution-staging page.
+		add_filter( 'boldgrid_staging_is_contaminated', array( 'Boldgrid_Staging_Page_And_Post_Staging', 'is_contaminated' ) );
 	}
 }
 
