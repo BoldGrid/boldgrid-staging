@@ -322,10 +322,7 @@ span.permalink {
 		// user to set a staging menu if they have not alrady done so.
 		$_SESSION['boldgrid_just_copied_a_page_to_staging'] = ( 'staging' == $post->post_status );
 
-		// If we're copying to staging, append '-staging' to the post_name
-		if ( 'staging' == $post->post_status ) {
-			$post->post_name .= '-staging';
-		}
+		$post = $this->set_post_name( $post );
 
 		// get the id of the new post by saving it.
 		$new_post_id = wp_insert_post( $post, false );
@@ -943,6 +940,44 @@ span.permalink {
 			$this,
 			'save_post_development_group'
 		), 9, 1 );
+	}
+
+	/**
+	 * Set the appropriate post name.
+	 *
+	 * This is usually called when copying a page from active to staging, or vice versa.
+	 *
+	 * For example, when copying the active home page to staging, the page name needs to change
+	 * from /home to /home-staging.
+	 *
+	 * This method is assuming that the post status has already been changed. If the post status
+	 * is seen as staging here, then we assume it use to be active and was just changed to staging.
+	 *
+	 * @since 1.3.1
+	 *
+	 * @param  object $post A WordPress post object.
+	 * @return object
+	 */
+	public function set_post_name( $post ) {
+		$post_name = $post->post_name;
+
+		// Remvoe -### from the post name. WordPress will ensure we don't have duplicate names later.
+		$post_name = preg_replace( '/-\d+$/', '', $post_name );
+
+		/*
+		 * If staging, append -staging.
+		 *
+		 * Otherwise, remove -staging.
+		 */
+		if ( 'staging' == $post->post_status ) {
+			$post_name .= '-staging';
+		} else {
+			$post_name = preg_replace( '/-staging$/', '', $post_name );
+		}
+
+		$post->post_name = $post_name;
+
+		return $post;
 	}
 
 	/**
