@@ -725,10 +725,7 @@ span.permalink {
 		 * 1. We're in production but trying to see a staged page, or
 		 * 2. We're in staging but trying to see a production page
 		 */
-		$contaminated = ( ( 'production' == $_SESSION['wp_staging_view_version'] &&
-			 'staging' == $wp_query->queried_object->post_status ) || ( 'staging' ==
-			 $_SESSION['wp_staging_view_version'] &&
-			 'publish' == $wp_query->queried_object->post_status ) ) ? true : false;
+		$contaminated = self::is_contaminated( $wp_query->queried_object->post_status );
 
 		// Should we be redirecting this page_name based on a redirect setup for the option
 		// boldgrid_staging_boldgrid_redirects?
@@ -1155,6 +1152,33 @@ span.permalink {
 		wp_redirect( get_admin_url( null, 'options-reading.php?staging=1&notice=no-front-page' ),
 			301 );
 		exit();
+	}
+
+	/**
+	 * Is the current page contaminated?
+	 *
+	 * For example, are we on a production site trying to pull up a staged page?
+	 *
+	 * @since 1.3.1
+	 *
+	 * @param string $post_status.
+	 */
+	public static function is_contaminated( $post_status ) {
+		// Determine our session value.
+		if( ! isset( $_SESSION ) ) {
+			$session_version = 'production';
+		} else {
+			$session_version = ( 'staging' === $_SESSION['wp_staging_view_version'] ? 'staging' : 'production' );
+		}
+
+		// Determine if there's contamination.
+		if( 'production' === $session_version && 'staging' === $post_status ) {
+			return true;
+		} elseif( 'staging' === $session_version && 'publish' === $post_status ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
