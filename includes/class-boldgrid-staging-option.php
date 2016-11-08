@@ -54,6 +54,16 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// Is this the first call from the customizer?
 		$this->is_first_customizer_preview = ( isset( $_REQUEST['customize_messenger_channel'] ) and
 			 'preview-0' == $_REQUEST['customize_messenger_channel'] ) ? true : false;
+
+		/*
+		 * Some 'pre option' methods support getting an unfiltered option. For example, if you're in
+		 * a staging scenario but need to get both the active and staging option, you can set
+		 * 'boldgrid_get_unfiltered_option' to true. Then, after getting both options, set this
+		 * option back to false.
+		 *
+		 * To prevent any issues, this option should always begin as 'false'.
+		 */
+		update_option( 'boldgrid_get_unfiltered_option', 'false' );
 	}
 
 	/**

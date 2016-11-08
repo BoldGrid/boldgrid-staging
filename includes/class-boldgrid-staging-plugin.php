@@ -865,7 +865,8 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return mixed The value of the boldgrid_staging_boldgrid_menus_created option.
 	 */
 	public function boldgrid_menus_created_pre_option() {
-		if ( $this->user_should_see_staging() ) {
+		// The 'boldgrid_get_unfiltered_option' option have been available here @since 1.3.2.
+		if ( $this->user_should_see_staging() && 'true' !== get_option( 'boldgrid_get_unfiltered_option' ) ) {
 			return get_option( 'boldgrid_staging_boldgrid_menus_created', array () );
 		} else {
 			return false;
