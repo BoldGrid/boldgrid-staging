@@ -842,7 +842,8 @@ span.permalink {
 		// be done, we'll only run it on the following pages:
 		$pagenows = array (
 			'options-reading.php',
-			'customize.php'
+			'customize.php',
+			'post.php',
 		);
 
 		if ( ! in_array( $pagenow, $pagenows ) ) {
