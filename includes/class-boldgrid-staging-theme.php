@@ -141,6 +141,10 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 				), 99 );
 
 			add_filter( 'wp_prepare_themes_for_js', array( $this, 'filter_wp_prepare_themes_for_js' ) );
+
+			add_filter( 'get_staging_theme_mod', array( $this, 'get_staging_theme_mod' ), 10, 2 );
+
+			add_action( 'set_staging_theme_mod', array( $this, 'set_staging_theme_mod' ), 10, 2 );
 		} else {
 			// WP Hooks:
 			add_action( 'wp_enqueue_scripts',
@@ -258,6 +262,21 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	}
 
 	/**
+	 * Set a staged theme mod.
+	 *
+	 * This method does not rely on the standard ?staging=1.
+	 *
+	 * @since 1.3.3
+	 */
+	public function set_staging_theme_mod( $mod, $value ) {
+		$mods = $this->get_staging_theme_mods();
+
+		$mods[$mod] = $value;
+
+		update_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, $mods );
+	}
+
+	/**
 	 * Get WP Option for stylesheet
 	 *
 	 * @param string $content
@@ -368,6 +387,32 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 		}
 
 		return $new_value;
+	}
+
+	/**
+	 * Get a staging theme mod.
+	 *
+	 * @since 1.3.3
+	 *
+	 * @param  string $name    The theme mod name.
+	 * @param  mixed  $default The default value to return.
+	 * @return mixed
+	 */
+	public function get_staging_theme_mod( $name, $default ) {
+		$mods = $this->get_staging_theme_mods();
+
+		return ( ! empty( $mods[$name] ) ? $mods[$name] : $default );
+	}
+
+	/**
+	 * Get the staging theme's mods.
+	 *
+	 * This method does not rely on the standard ?staging=1.
+	 *
+	 * @since 1.3.3
+	 */
+	public function get_staging_theme_mods() {
+		return get_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, array() );
 	}
 
 	/**
