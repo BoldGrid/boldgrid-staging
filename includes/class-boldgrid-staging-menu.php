@@ -141,7 +141,10 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 		// Default the "This menu contains a staged page" value to false.
 		$has_staging_page = false;
 
+		// Remove / add filters to prevent an infinite loop.
+		remove_filter( 'get_terms', array( $this, 'get_menus' ), 10, 4 );
 		$items = wp_get_nav_menu_items( $menu_id );
+		add_filter( 'get_terms', array( $this, 'get_menus' ), 10, 4 );
 
 		// If this is an empty menu, continue.
 		if( false === $items ) {

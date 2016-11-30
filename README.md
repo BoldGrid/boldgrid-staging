@@ -29,6 +29,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 ### 1.3.3 In progress ###
 * Bug fix:		JIRA WPB-2635	Start over staging affecting active site.
+* Bug fix:		JIRA WPB-2664	Memory error when loading Customizer.
 
 ### 1.3.2 ###
 * Bug fix:		JIRA WPB-2507	Hide staging menus when customizing active site.
