@@ -109,5 +109,15 @@ function boldgrid_staging_init() {
 	}
 }
 
-// Add an action to load this plugin on plugins_loaded:
-add_action( 'plugins_loaded', 'boldgrid_staging_init' );
+/*
+ * Add an action to load this plugin on plugins_loaded.
+ *
+ * Historically, this action was added with the default priority of 10. To resolve an issue
+ * introduced by WordPress 4.7, this action is given a 9 priority.
+ *
+ * The Staging plugin hooks into get_option() to return the staging 'stylesheet' option while in a
+ * staging scenario. In WordPress 4.7, BEFORE we can hook into get_option, the customizer is getting
+ * the theme. The theme will always be the active theme because that call for the theme is coming
+ * before the Staging plugin is initialized. This is the reason for the 9 priority @since 1.3.1.
+ */
+add_action( 'plugins_loaded', 'boldgrid_staging_init', 9 );
