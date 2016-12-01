@@ -141,13 +141,8 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 				), 99 );
 
 			add_filter( 'wp_prepare_themes_for_js', array( $this, 'filter_wp_prepare_themes_for_js' ) );
-		} else {
-			// WP Hooks:
-			add_action( 'wp_enqueue_scripts',
-				array (
-					$this,
-					'customizer_switch_theme'
-				) );
+
+			add_action( 'admin_enqueue_scripts', array( $this, 'customizer_switch_theme' ) );
 		}
 
 		add_filter( 'boldgrid_theme_framework_config', array (
@@ -183,7 +178,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * @param string $hook
 	 */
 	public function customizer_switch_theme( $hook ) {
-		if ( true == $this->has_staging_theme && $this->in_customizer ) {
+		if ( true == $this->has_staging_theme && $this->in_customize ) {
 			wp_enqueue_script( 'customizer-switch-theme.js',
 				$this->plugins_url . 'assets/js/customizer-switch-theme.js', array (),
 				BOLDGRID_STAGING_VERSION, true );

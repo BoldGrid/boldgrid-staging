@@ -29,9 +29,13 @@ class Boldgrid_Staging_Base {
 	public $in_ajax;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @global string $pagenow
 	 */
 	public function __construct() {
+		global $pagenow;
+
 		$this->plugins_url = plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/';
 
 		$this->session_start();
@@ -42,6 +46,9 @@ class Boldgrid_Staging_Base {
 
 		$this->in_customizer = ( isset( $_REQUEST['wp_customize'] ) &&
 			 'on' == $_REQUEST['wp_customize'] );
+
+		// Are we at wp-admin/customize.php?
+		$this->in_customize = ( 'customize.php' === $pagenow );
 
 		$this->set_view_version();
 
