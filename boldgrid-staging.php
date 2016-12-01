@@ -25,7 +25,7 @@ if ( false === defined( 'BOLDGRID_STAGING_VERSION' ) ) {
 
 // Define Editor path.
 if ( false === defined( 'BOLDGRID_STAGING_PATH' ) ) {
-	define( 'BOLDGRID_STAGING_PATH', dirname ( __FILE__ ) );
+	define( 'BOLDGRID_STAGING_PATH', dirname( __FILE__ ) );
 }
 
 // Define Editor configuration directory.
@@ -37,7 +37,7 @@ if ( false === defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
 require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging.php';
 
 // If DOING_CRON, then check if this plugin should be auto-updated.
-if ( true === defined( 'DOING_CRON' ) && DOING_CRON ){
+if ( true === defined( 'DOING_CRON' ) && DOING_CRON ) {
 	// Ensure required definitions for pluggable.
 	if ( false === defined( 'AUTH_COOKIE' ) ) {
 		define( 'AUTH_COOKIE', null );
@@ -96,16 +96,16 @@ function boldgrid_staging_init() {
 		 */
 		// Prevent staged pages from showing on the front-end of the site or redirect.
 		add_filter( 'parse_query',
-			array (
+			array(
 				'Boldgrid_Staging_Page_And_Post_Staging',
-				'prevent_public_from_seeing_staged_pages'
-			), 20 );
+				'prevent_public_from_seeing_staged_pages',
+        ), 20 );
 
-		add_filter( 'template_redirect',
-			array (
+			add_filter( 'template_redirect',
+				array(
 				'Boldgrid_Staging_Page_And_Post_Staging',
-				'prevent_public_from_seeing_staged_pages'
-			) );
+				'prevent_public_from_seeing_staged_pages',
+            ) );
 	}
 }
 
