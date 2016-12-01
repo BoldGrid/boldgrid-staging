@@ -29,6 +29,15 @@ class Boldgrid_Staging_Base {
 	public $in_ajax;
 
 	/**
+	 * Status of whether or not we're in wp-admin/customize.php
+	 *
+	 * @since  1.3.1
+	 * @access public
+	 * @var    bool
+	 */
+	public $in_customize;
+
+	/**
 	 * Constructor.
 	 *
 	 * @global string $pagenow
@@ -44,7 +53,6 @@ class Boldgrid_Staging_Base {
 
 		$this->staging_disabled_in_url = ( isset( $_GET['staging'] ) && '0' == $_GET['staging'] );
 
-		// Are we at wp-admin/customize.php?
 		$this->in_customize = ( 'customize.php' === $pagenow );
 
 		$this->set_view_version();
