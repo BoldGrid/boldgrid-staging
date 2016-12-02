@@ -5,7 +5,7 @@
 **Contributors:** imh_brad, joemoto, rramo012, timph
 **Tags:** inspiration,customization,build,create,design,staging
 **Requires at least:** 4.3
-**Tested up to:** 4.6.1
+**Tested up to:** 4.7
 **License:** GPLv2 or later
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +40,10 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 * Misc:			JIRA WPB-2503	Added plugin requirements to readme.txt file.
 * Update:		JIRA WPB-2563	Convert Attribution page to use custom post type.
 * Bug fix:		JIRA WPB-2548	Fix sloppy post name issues when copying to staging (and vice versa).
+
+### 1.3.0.1 ###
+* Bug fix:		JIRA WPB-2667	Staging switcher missing from Customizer in WordPress 4.7
+* Bug fix:		JIRA WPB-2668	Staging theme name listed incorrectly in Customizer.
 
 ### 1.3 ###
 * Update:						Bump version.

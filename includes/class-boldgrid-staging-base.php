@@ -29,9 +29,22 @@ class Boldgrid_Staging_Base {
 	public $in_ajax;
 
 	/**
-	 * Constructor
+	 * Status of whether or not we're in wp-admin/customize.php
+	 *
+	 * @since  1.3.1
+	 * @access public
+	 * @var    bool
+	 */
+	public $in_customize;
+
+	/**
+	 * Constructor.
+	 *
+	 * @global string $pagenow
 	 */
 	public function __construct() {
+		global $pagenow;
+
 		$this->plugins_url = plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/';
 
 		$this->session_start();
@@ -40,8 +53,7 @@ class Boldgrid_Staging_Base {
 
 		$this->staging_disabled_in_url = ( isset( $_GET['staging'] ) && '0' == $_GET['staging'] );
 
-		$this->in_customizer = ( isset( $_REQUEST['wp_customize'] ) &&
-			 'on' == $_REQUEST['wp_customize'] );
+		$this->in_customize = ( 'customize.php' === $pagenow );
 
 		$this->set_view_version();
 
@@ -147,7 +159,7 @@ class Boldgrid_Staging_Base {
 	 */
 	public function set_view_version() {
 		// If we are in the customizer's iframe.
-		if ( $this->in_customizer ) {
+		if ( is_customize_preview() ) {
 			if ( $this->is_referer_staging() ) {
 				$_SESSION['wp_staging_view_version'] = 'staging';
 			} else {
@@ -244,9 +256,10 @@ class Boldgrid_Staging_Base {
 		$wp_staging_in_session = ( isset( $_SESSION['wp_staging_view_version'] ) &&
 			 'staging' == $_SESSION['wp_staging_view_version'] );
 
-		// If we're in the Staging Customizer's iframe preview.
-		if ( $this->in_customizer && $this->is_referer_staging() ) {
-			return true;
+		if( $this->in_customize ) {
+			return $this->staging_in_url;
+		} elseif( is_customize_preview() ) {
+			return $this->is_referer_staging();
 		}
 
 		/**
