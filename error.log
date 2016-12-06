@@ -1,0 +1,11 @@
+Counting objects: 11, done.
+Delta compression using up to 48 threads.
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (6/6), 992 bytes, done.
+Total 6 (delta 5), reused 0 (delta 0)
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+remote: Unexpected system error after push was received.
+remote: These changes may not be reflected on github.com!
+remote: Your unique error code: bd016c191b39a2876a7f09da1bc5e365
+To git@github.com:BoldGrid/boldgrid-staging.git
+   aa239d4..24d60a9  wp47 -> wp47
