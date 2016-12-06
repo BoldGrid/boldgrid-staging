@@ -265,7 +265,16 @@ span.permalink {
 		 */
 
 		$is_action_menu = ( isset( $_REQUEST['action'] ) && 'load-available-menu-items-customizer' === $_REQUEST['action'] );
-		$is_object_page = ( isset( $_REQUEST['object'] ) && 'page' === $_REQUEST['object'] );
+
+		/*
+		 * In WP Customizer <= 4.6, individual ajax calls were made to get pages, posts, etc.
+		 * $is_object_page was a check to ensure the ajax call was for a page, and not any other type.
+		 *
+		 * In WP Customizer >= 4.7, all the ajax calls are now combined into one call. There is no
+		 * longer a $_REQUEST['object'] being sent in. Instead, we'll look at
+		 * $query->query_vars['post_type'] to determine if this is a query for a page.
+		 */
+		$is_object_page = ( ! empty( $query->query_vars['post_type'] ) && 'page' === $query->query_vars['post_type'] );
 
 		if ( $this->in_ajax && $this->user_should_see_staging() && $is_action_menu && $is_object_page ) {
 				$query->set( 'post_status', array( 'staging' ) );
