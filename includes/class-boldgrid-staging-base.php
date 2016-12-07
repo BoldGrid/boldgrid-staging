@@ -20,6 +20,15 @@ if ( ! defined( 'WPINC' ) ) {
  */
 class Boldgrid_Staging_Base {
 	/**
+	 * The ajax action, ie $_POST['action'].
+	 *
+	 * @since  1.3.0.2
+	 * @access public
+	 * @var    string Will be null if not $in_ajax.
+	 */
+	public $ajax_action;
+
+	/**
 	 * Status of whether or not we're in an ajax call.
 	 *
 	 * @since  1.1.4
@@ -60,6 +69,8 @@ class Boldgrid_Staging_Base {
 		$this->set_has_staging_theme();
 
 		$this->in_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
+
+		$this->ajax_action = ( $this->in_ajax && isset( $_POST['action'] ) ? $_POST['action'] : null );
 	}
 
 	/**
@@ -121,7 +132,7 @@ class Boldgrid_Staging_Base {
 
 		parse_str( $parts['query'], $query );
 
-		return ( ! empty( $query['staging'] ) && '1' === $query['staging'] );
+		return ( ! empty( $query['staging'] ) && 1 == $query['staging'] );
 	}
 
 	/**
