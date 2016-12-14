@@ -40,6 +40,10 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 * Update:		JIRA WPB-2563	Convert Attribution page to use custom post type.
 * Bug fix:		JIRA WPB-2548	Fix sloppy post name issues when copying to staging (and vice versa).
 
+### 1.3.0.2 ###
+* Bug fix:		JIRA WPB-2685	Active pages showing as menu options in Staging Customizer.
+* Bug fix:		JIRA WPB-2686	New staged pages created in Customizer are not saved as staged.
+
 ### 1.3.0.1 ###
 * Bug fix:		JIRA WPB-2667	Staging switcher missing from Customizer in WordPress 4.7
 * Bug fix:		JIRA WPB-2668	Staging theme name listed incorrectly in Customizer.

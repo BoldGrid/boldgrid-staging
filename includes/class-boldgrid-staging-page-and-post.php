@@ -88,6 +88,8 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 				$this,
 				'get_pages'
 			), 10, 2 );
+
+			add_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
 		} else {
 			/**
 			 * ********************************************************************
@@ -265,7 +267,16 @@ span.permalink {
 		 */
 
 		$is_action_menu = ( isset( $_REQUEST['action'] ) && 'load-available-menu-items-customizer' === $_REQUEST['action'] );
-		$is_object_page = ( isset( $_REQUEST['object'] ) && 'page' === $_REQUEST['object'] );
+
+		/*
+		 * In WP Customizer <= 4.6, individual ajax calls were made to get pages, posts, etc.
+		 * $is_object_page was a check to ensure the ajax call was for a page, and not any other type.
+		 *
+		 * In WP Customizer >= 4.7, all the ajax calls are now combined into one call. There is no
+		 * longer a $_REQUEST['object'] being sent in. Instead, we'll look at
+		 * $query->query_vars['post_type'] to determine if this is a query for a page.
+		 */
+		$is_object_page = ( ! empty( $query->query_vars['post_type'] ) && 'page' === $query->query_vars['post_type'] );
 
 		if ( $this->in_ajax && $this->user_should_see_staging() && $is_action_menu && $is_object_page ) {
 				$query->set( 'post_status', array( 'staging' ) );
@@ -346,6 +357,42 @@ span.permalink {
 				$wp_post_statuses['publish']->label_count[$key] = $new_value;
 			}
 		}
+	}
+
+	/**
+	 * Filter new pages created via the Customizer.
+	 *
+	 * If you're in your Staging Customizer and you create a staged page, make sure it's post_status
+	 * is set to staging after publishing via the Customizer.
+	 *
+	 * Creating new pages via the Customizer is new as of WordPress 4.7.
+	 *
+	 * @since 1.3.0.2
+	 *
+	 * @param int     $post_ID      Post ID.
+	 * @param WP_Post $post_after   Post object following the update.
+	 * @param WP_Post $post_before  Post object before the update.
+	 */
+	public function new_via_customizer( $post_ID, $post_after, $post_before ) {
+		// If we're not saving a page via customizer, abort.
+		if( 'customize_save' !== $this->ajax_action ) {
+			return;
+		}
+
+		// If we're not saving a page, abort.
+		if( 'page' !== $post_after->post_type ) {
+			return;
+		}
+
+		// If we're not saving a page via the staging customizer, abort.
+		if( ! $this->is_referer_staging() ) {
+			return;
+		}
+
+		// Ah, all is good. Remove / add filter to avoid infinite loop and stage this post.
+		remove_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
+		$this->stage( $post_ID );
+		add_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
 	}
 
 	/**
@@ -1018,6 +1065,39 @@ span.permalink {
 		if ( ! isset( $this->post_stati ) ) {
 			// get_post_stati() =
 			$this->post_stati = get_post_stati( array (), 'objects' );
+		}
+	}
+
+	/**
+	 * Stage a page by setting its status to staging.
+	 *
+	 * @since 1.3.0.2
+	 *
+	 * @param  int  $id The id of the page to stage.
+	 * @return bool
+	 */
+	public function stage( $id ) {
+		$post = get_post( $id );
+
+		// If we failed to get a post, abort.
+		if( is_wp_error( $post ) ) {
+			return false;
+		}
+
+		// Only pages may be staged. Abort if this is not a page.
+		if( 'page' !== $post->post_type ) {
+			return false;
+		}
+
+		// Set the post status to staging and save.
+		$post->post_status = 'staging';
+		$updated = wp_update_post( $post, true );
+
+		// Return bool based on success of saving the post.
+		if( is_wp_error( $updated ) ) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 
