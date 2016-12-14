@@ -394,7 +394,7 @@ span.permalink {
 
 		// Ah, all is good. Remove / add filter to avoid infinite loop and stage this post.
 		remove_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
-		$staged = $this->stage( $post_ID );
+		$this->stage( $post_ID );
 		add_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
 	}
 
