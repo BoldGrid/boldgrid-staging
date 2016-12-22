@@ -110,6 +110,28 @@ function boldgrid_staging_init() {
 		// Visitors to the front end of the site, prevent them from accessing the attribution-staging page.
 		add_filter( 'boldgrid_staging_is_contaminated', array( 'Boldgrid_Staging_Page_And_Post_Staging', 'is_contaminated' ) );
 	}
+
+	/*
+	 * Begin adding hooks, regardless of user's privileges.
+	 *
+	 * The above init is based upon whether or not the user can manage_options. This may not be the
+	 * ideal check.
+	 *
+	 * Example:
+	 * Let's say I want to filter search results on the front end of the site so no staging pages
+	 * show up on the active site's search (and vice versa). If using the manage_options check
+	 * above, I'd have to add filters to both the if and else, because regardless of your
+	 * privileges, you shouldn't see contaminated search results.
+	 *
+	 * @since 1.3.5
+	 *
+	 * @todo: Update loading of plugin.
+	 */
+
+	require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-search.php';
+
+	$search = new Boldgrid_Staging_Search();
+	$search->add_hooks();
 }
 
 /*

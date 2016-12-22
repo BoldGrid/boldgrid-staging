@@ -487,26 +487,6 @@ span.permalink {
 				}
 			}
 		} else {
-			/**
-			 * ****************************************************************
-			 * If on the front end of the site:
-			 * ****************************************************************
-			 */
-
-			// Only applicable pages should show in a search result on the front end. For example,
-			// if on the active site, don't show search results from the staging site, and vice
-			// versa.
-			if ( $query->is_search ) {
-				if ( $this->user_should_see_staging() ) {
-					$query->set( 'post_status', array (
-						'staging'
-					) );
-				} else {
-					$query->set( 'post_status', array (
-						'publish'
-					) );
-				}
-			}
 
 			// If we're looking for an attachment or a revision, return.
 			if ( 'attachment' == $post_type || 'revision' == $post_type ) {
