@@ -70,7 +70,7 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 		// Add a "Development Group" column to "All pages"
 		add_filter( 'manage_pages_columns',			array( $this, 'page_manage_pages_columns_development_group' ) );
 		// On 'All pages', order posts by development status and then title.
-		add_filter( 'posts_orderby', array( $this, 'posts_orderby' ) );
+		add_filter( 'posts_orderby',				array( $this, 'posts_orderby' ) );
 		// Add the post status to the "Development Group" column on "All Pages"
 		add_action( 'manage_pages_custom_column',	array( $this, 'page_manage_pages_custom_column_develment_group' ), 10, 2 );
 		// Add "Copy to Staging" for each page in "All Pages"
