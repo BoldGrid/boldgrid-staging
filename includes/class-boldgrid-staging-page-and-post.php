@@ -53,6 +53,8 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 		 * ********************************************************************
 		 */
 		if ( is_admin() ) {
+
+
 			// Load our class-staging css/js
 			add_action( 'admin_enqueue_scripts',
 				array (
@@ -83,12 +85,6 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 					$this,
 					'switch_wp_staging_version_if_editing_a_page'
 				) );
-
-			add_filter( 'get_pages', array (
-				$this,
-				'get_pages'
-			), 10, 2 );
-
 			add_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
 		} else {
 			/**
@@ -109,6 +105,8 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 				'help_user_set_front_page'
 			), 20 );
 		}
+
+		add_filter( 'get_pages', array( $this, 'get_pages' ), 10, 2 );
 
 		add_action( 'pre_get_posts', array (
 			$this,
@@ -863,18 +861,24 @@ span.permalink {
 	 * @return bool
 	 */
 	public function run_get_pages( $r ) {
-		global $pagenow;
+		/*
+		 * If we're in the dashboard, only run this filter on certain pages.
+		 *
+		 * In the future we may want to run this filter on all admin pages (or at least on a few
+		 * more), however until further testing we will limit its usage.
+		 */
+		if( is_admin() ) {
+			global $pagenow;
 
-		// todo: We should probably run this filter on every admin page. Until further testing can
-		// be done, we'll only run it on the following pages:
-		$pagenows = array (
-			'options-reading.php',
-			'customize.php',
-			'post.php',
-		);
+			$pagenows = array (
+				'options-reading.php',
+				'customize.php',
+				'post.php',
+			);
 
-		if ( ! in_array( $pagenow, $pagenows ) ) {
-			return false;
+			if ( ! in_array( $pagenow, $pagenows ) ) {
+				return false;
+			}
 		}
 
 		// If the user should not see staging content, abort.
