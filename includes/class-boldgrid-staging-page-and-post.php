@@ -47,161 +47,38 @@ class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
 	 * Add hooks
 	 */
 	public function add_hooks() {
-		/**
-		 * ********************************************************************
-		 * admin hooks
-		 * ********************************************************************
-		 */
 		if ( is_admin() ) {
-
-
 			// Load our class-staging css/js
-			add_action( 'admin_enqueue_scripts',
-				array (
-					$this,
-					'wp_enqueue_scripts_class_staging'
-				) );
-
-			add_action( 'pre_get_posts', array (
-				$this,
-				'admin_page_pre_get_posts'
-			) );
-
+			add_action( 'admin_enqueue_scripts',	array( $this, 'wp_enqueue_scripts_class_staging' ) );
+			add_action( 'pre_get_posts',			array( $this, 'admin_page_pre_get_posts' ) );
 			// Change $wp_post_statuses so that "Published" becomes "Active"
-			add_action( 'admin_init', array (
-				$this,
-				'modify_wp_post_statuses'
-			) );
-
-			add_action( 'admin_head', array (
-				$this,
-				'admin_head'
-			) );
-
-			// If editing a page, update $_SESSION['wp_staging_view_version'] to match page's
-			// status.
-			add_action( 'admin_init',
-				array (
-					$this,
-					'switch_wp_staging_version_if_editing_a_page'
-				) );
-			add_filter( 'post_updated', array( $this, 'new_via_customizer' ), 10, 3 );
+			add_action( 'admin_init',				array( $this, 'modify_wp_post_statuses' ) );
+			add_action( 'admin_head',				array( $this, 'admin_head' ) );
+			// If editing a page, update $_SESSION['wp_staging_view_version'] to match page's status.
+			add_action( 'admin_init',				array( $this, 'switch_wp_staging_version_if_editing_a_page' ) );
+			add_filter( 'post_updated',				array( $this, 'new_via_customizer' ), 10, 3 );
 		} else {
-			/**
-			 * ********************************************************************
-			 * wp hooks
-			 * ********************************************************************
-			 */
-
-			// If viewing staging site and trying to load an active page (and vice versa), trigger
-			// 404.
-			add_filter( 'parse_query', array (
-				$this,
-				'prevent_page_contamination'
-			) );
-
-			add_filter( 'parse_query', array (
-				$this,
-				'help_user_set_front_page'
-			), 20 );
+			// If viewing staging site and trying to load an active page (and vice versa), trigger 404.
+			add_filter( 'parse_query',				array( $this, 'prevent_page_contamination' ) );
+			add_filter( 'parse_query',				array( $this, 'help_user_set_front_page' ), 20 );
 		}
 
-		add_filter( 'get_pages', array( $this, 'get_pages' ), 10, 2 );
-
-		add_action( 'pre_get_posts', array (
-			$this,
-			'page_pre_get_posts'
-		) );
-
+		add_filter( 'get_pages',					array( $this, 'get_pages' ), 10, 2 );
+		add_action( 'pre_get_posts',				array( $this, 'page_pre_get_posts' ) );
 		// handle ajax request for "Copy to Staging/Active"
-		add_action( 'wp_ajax_copy_to_post_status',
-			array (
-				$this,
-				'copy_to_post_status_callback'
-			) );
-
-		/**
-		 * Add a "Development Group" column to "All pages"
-		 *
-		 * There are two hooks below for this, one for pages and one for posts
-		 */
-
+		add_action( 'wp_ajax_copy_to_post_status',	array( $this, 'copy_to_post_status_callback' ) );
 		// Add a "Development Group" column to "All pages"
-		add_filter( 'manage_pages_columns',
-			array (
-				$this,
-				'page_manage_pages_columns_development_group'
-			) );
-
-		// // Add a "Development Group" column to "All posts"
-		// add_filter( 'manage_posts_columns',
-		// array (
-		// $this,
-		// 'page_manage_pages_columns_development_group'
-		// ) );
-
+		add_filter( 'manage_pages_columns',			array( $this, 'page_manage_pages_columns_development_group' ) );
 		// On 'All pages', order posts by development status and then title.
-		add_filter( 'posts_orderby', array (
-			$this,
-			'posts_orderby'
-		) );
-
-		/**
-		 * Add the post status to the "Development Group" column on "All Pages"
-		 *
-		 * There are two hooks below for this, one for pages and one for posts
-		 */
-
+		add_filter( 'posts_orderby', array( $this, 'posts_orderby' ) );
 		// Add the post status to the "Development Group" column on "All Pages"
-		add_action( 'manage_pages_custom_column',
-			array (
-				$this,
-				'page_manage_pages_custom_column_develment_group'
-			), 10, 2 );
-
-		// Add the post status to the "Development Group" column on "All Posts"
-		// add_action( 'manage_posts_custom_column',
-		// array (
-		// $this,
-		// 'page_manage_pages_custom_column_develment_group'
-		// ), 10, 2 );
-
-		/**
-		 * Add "Copy to Staging" for each page in "All Pages"
-		 *
-		 * There are two hooks below for this, one for pages and one for posts
-		 */
-
+		add_action( 'manage_pages_custom_column',	array( $this, 'page_manage_pages_custom_column_develment_group' ), 10, 2 );
 		// Add "Copy to Staging" for each page in "All Pages"
-		add_filter( 'page_row_actions', array (
-			$this,
-			'page_row_copy_to'
-		), 10, 2 );
-
-		// Add "Copy to Staging" for each post in "All Posts"
-		// add_filter( 'post_row_actions', array (
-		// $this,
-		// 'page_row_copy_to'
-		// ), 10, 2 );
-
-		add_action( 'post_submitbox_misc_actions',
-			array (
-				$this,
-				'page_submitbox_misc_actions_development_group'
-			) );
-
-		add_action( 'save_post', array (
-			$this,
-			'save_post_development_group'
-		), 9, 1 );
-
-		// If a page is copied to staging and no staging theme is set,
-		// prompt the user to set a staged theme.
-		add_action( 'admin_notices',
-			array (
-				$this,
-				'after_copy_to_staging_prompt_to_set_staged_theme'
-			) );
+		add_filter( 'page_row_actions',				array( $this, 'page_row_copy_to' ), 10, 2 );
+		add_action( 'post_submitbox_misc_actions',	array( $this, 'page_submitbox_misc_actions_development_group' ) );
+		add_action( 'save_post',					array( $this, 'save_post_development_group' ), 9, 1 );
+		// If a page is copied to staging and no staging theme is set, prompt the user to set a staged theme.
+		add_action( 'admin_notices',				array( $this, 'after_copy_to_staging_prompt_to_set_staged_theme' ) );
 	}
 
 	/**
