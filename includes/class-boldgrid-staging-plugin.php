@@ -220,6 +220,8 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 
 		add_filter( 'boldgrid_cart_post_status', array( $this, 'boldgrid_cart_post_status' ) );
 
+		add_action( 'pre_set_permalinks', array( $this, 'pre_set_permalinks' ) );
+
 		// Hooks intended for only front-end site:
 		if ( ! is_admin() ) {
 			// Change links from "attribution" to "attribution-staging"
@@ -290,21 +292,20 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			return $post;
 		}
 
-		// Append the permalink / url with '-staging'.
-		$post['post_name'] .= '-staging';
-
-		/**
-		 * If this is a 'page', set the status to 'staging'.
-		 * If this is a 'post', set the status to 'private'.
+		/*
+		 * Adjust our page / post.
 		 *
-		 * Posts are currently not staged. If this is a post, set the status to private. This
-		 * will prevent a "staged" post from becoming an active post and showing on the active
-		 * site.
+		 * Posts are currently not staged. If this is a post, set the status to private. This will
+		 * prevent a "staged" post from becoming an active post and showing on the active site.
 		 */
-		if ( 'post' == $post['post_type'] ) {
-			$post['post_status'] = 'private';
-		} else {
-			$post['post_status'] = 'staging';
+		switch( $post['post_type'] ) {
+			case 'page':
+				$post['post_name'] .= '-staging';
+				$post['post_status'] = 'staging';
+				break;
+			case 'post':
+				$post['post_status'] = 'private';
+				break;
 		}
 
 		return $post;
@@ -1006,5 +1007,21 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Filter BoldGrid Inspiration's $set_permalinks value.
+	 *
+	 * This value determines whether or not to set permalinks during a deployment. If we're
+	 * deploying a staging site, we don't want to adjust the permalinks as this will affect the
+	 * active site.
+	 *
+	 * @since 1.3.6
+	 *
+	 * @param  bool $set_permalinks True if we should proceed with setting permalinks.
+	 * @return bool
+	 */
+	public function pre_set_permalinks( $set_permalinks ) {
+		return $this->user_should_see_staging() ? false : $set_permalinks;
 	}
 }

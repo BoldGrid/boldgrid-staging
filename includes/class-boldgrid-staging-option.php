@@ -45,6 +45,15 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	);
 
 	/**
+	 * An array of option values before the options were deleted.
+	 *
+	 * @since  1.3.6
+	 * @access public
+	 * @var    array
+	 */
+	public $values_before_deletion = array();
+
+	/**
 	 */
 	public function __construct() {
 		parent::__construct();
@@ -150,15 +159,17 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 				'admin_notice_set_front_page_settings'
 			) );
 
+		add_action( 'delete_option', array( $this, 'value_before_deletion' ) );
+
 		// Stage options defined in $this->options_to_stage.
 		// Options are staged by hooking into the 'pre_option' and 'pre_update_option' filters.
 		foreach ( $this->options_to_stage as $option ) {
-			add_action( 'pre_option_' . $option, array (
+			add_filter( 'pre_option_' . $option, array (
 				$this,
 				'pre_option'
 			) );
 
-			add_action( 'pre_update_option_' . $option,
+			add_filter( 'pre_update_option_' . $option,
 				array (
 					$this,
 					'pre_update_option'
@@ -314,10 +325,6 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	/**
 	 * Delete a staged option rather than an active option.
 	 *
-	 * todo: delete_option does not have a way to change the option name before deleting it, like
-	 * pre_option and pre_update_option. This isn't a problem, because it's rare we delete an
-	 * option. In the future, we'll need to address this.
-	 *
 	 * @since 1.0.7
 	 */
 	public function delete_option() {
@@ -326,10 +333,28 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		$option = substr( current_filter(), strlen( 'delete_option_' ) );
 
 		if ( $this->user_should_see_staging() ) {
-			$staged_option = get_option( 'boldgrid_staging_' . $option );
+			delete_option( 'boldgrid_staging_' . $option );
 
-			delete_option( $staged_option );
+			// Restore our active option to its value before delete_option was called.
+			$this->update_unfiltered( $option, $this->values_before_deletion[ $option ] );
 		}
+	}
+
+	/**
+	 * Get an option's unfiltered value.
+	 *
+	 * Remove the filters added by this class, and get the option without them.
+	 *
+	 * @since 1.3.6
+	 *
+	 * @param  string $option The option name.
+	 * @return mixed
+	 */
+	public function get_unfiltered( $option ) {
+		remove_filter( 'pre_option_' . $option, array( $this, 'pre_option' ) );
+		$value = get_option( $option );
+		add_filter( 'pre_option_' . $option, array( $this, 'pre_option' ) );
+		return $value;
 	}
 
 	/**
@@ -509,5 +534,45 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		}
 
 		return $new_value;
+	}
+
+	/**
+	 * Update an option without any filters.
+	 *
+	 * Remove the filters added by this class, and update an option without them.
+	 *
+	 * @since 1.3.6
+	 *
+	 * @param  string $option The option name.
+	 * @return mixed
+	 */
+	public function update_unfiltered( $option, $value ) {
+		remove_filter( 'pre_update_option_' . $option, array( $this, 'pre_update_option' ), 10, 2 );
+		update_option( $option, $value );
+		add_filter( 'pre_update_option_' . $option, array( $this, 'pre_update_option' ), 10, 2 );
+	}
+
+	/**
+	 * Store a copy of an option value before deleting it.
+	 *
+	 * This method is hooked into delete_option, which is triggered immediately before an option is
+	 * deleted.
+	 *
+	 * @since 1.3.6
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/delete_option/
+	 */
+	public function value_before_deletion( $option ) {
+		// We're only interested in saving options when we're in a Staging environment.
+		if( ! $this->user_should_see_staging() ) {
+			return;
+		}
+
+		// We don't need to keep track of all option values, only those we've specfically set.
+		if( ! in_array( $option, $this->options_to_stage ) ) {
+			return;
+		}
+
+		$this->values_before_deletion[ $option ] = $this->get_unfiltered( $option );
 	}
 }
