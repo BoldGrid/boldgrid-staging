@@ -177,7 +177,7 @@ class Boldgrid_Staging_Deployment {
 	public function deploy_logger( $message ) {
 		?>
 <script type="text/javascript">
-	$installation_log.find(".plugin-card-top").append("<?php echo $message; ?>");
+	$installation_log.find(".plugin-card-top").append('<?php echo $message; ?>');
 	update_deploy_log_line_count();
 </script>
 <?php
