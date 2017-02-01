@@ -1,6 +1,6 @@
 var IMHWPB = IMHWPB || {};
 
-IMHWPB.Staging_Customizer_Switch_Theme = function() {
+IMHWPB.Staging_Customizer_Switch_Theme = function( $ ) {
 	var self = this;
 
 	self.text_save_and_stage = "Save & Stage";
@@ -11,7 +11,6 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 		// CHANGE: Active theme
 		// TO: Active theme / Staged theme
 		self.add_staging_theme_next_to_active_theme();
-
 		if ('1' == self.getParameterByName('staging')) {
 			self.hide_unknown_settings_in_customizer();
 		}
@@ -36,8 +35,7 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 		/**
 		 * Configure some vars...
 		 */
-		var active_theme_span = jQuery(
-				'li#accordion-section-themes h3.accordion-section-title span:first', top.document);
+		var active_theme_span = $( '#accordion-section-themes .accordion-section-title span:first' );
 		var active_theme_html = jQuery(active_theme_span).html();
 		var staging_in_url = self.getParameterByName('staging');
 		var return_in_url = encodeURIComponent(self.getParameterByName('return'));
@@ -152,7 +150,6 @@ IMHWPB.Staging_Customizer_Switch_Theme = function() {
 				jQuery(button_save_and_activate).attr('value', self.text_save_and_stage);
 			}, 200);
 		}
-	}
-};
+	}};
 
-new IMHWPB.Staging_Customizer_Switch_Theme();
+IMHWPB.Staging_Customizer_Switch_Theme( jQuery );
