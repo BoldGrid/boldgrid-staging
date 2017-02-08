@@ -36,50 +36,14 @@ if ( false === defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
 // Load only in the admin section for Administrators.
 require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging.php';
 
-// If DOING_CRON, then check if this plugin should be auto-updated.
-if ( true === defined( 'DOING_CRON' ) && DOING_CRON ) {
-	// Ensure required definitions for pluggable.
-	if ( false === defined( 'AUTH_COOKIE' ) ) {
-		define( 'AUTH_COOKIE', null );
-	}
-
-	if ( false === defined( 'LOGGED_IN_COOKIE' ) ) {
-		define( 'LOGGED_IN_COOKIE', null );
-	}
-
-	// Load the pluggable class, if needed.
-	require_once ABSPATH . 'wp-includes/pluggable.php';
-
-	// Include the update class.
-	require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-update.php';
-
-	// Instantiate the update class.
-	$plugin_update = new Boldgrid_Staging_Update();
-
-	// Check and update plugins.
-	$plugin_update->wp_update_this_plugin();
-}
-
 /**
  * Plugin init.
  */
 function boldgrid_staging_init() {
-	/**
-	 * ************************************************************************
-	 * Initialize BoldGrid Staging for Admins / users who can 'manage_options'
-	 * ************************************************************************
-	 */
-	if ( current_user_can( 'manage_options' ) ) {
-		// Load and instantiate the staging class.
-		$staging = new Boldgrid_Staging();
-	} else {
-		/**
-		 * ********************************************************************
-		 * Initialize BoldGrid Staging for site visitors / users who
-		 * cannot 'manage_options'
-		 * ********************************************************************
-		 */
+	$staging = new Boldgrid_Staging();
 
+	// Initialize BoldGrid Staging for site visitors/users who cannot 'manage_options'.
+	if ( ! current_user_can( 'manage_options' ) ) {
 		// Register custom post status for all others:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-base.php';
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-page-and-post.php';

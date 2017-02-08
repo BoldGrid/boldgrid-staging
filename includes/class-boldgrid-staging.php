@@ -14,11 +14,17 @@
 class Boldgrid_Staging {
 	/**
 	 * Private class property $boldgrid_staging_config
+	 *
+	 * @access private
+	 *
+	 * @var Boldgrid_Staging_Config
 	 */
 	private $boldgrid_staging_config;
 
 	/**
 	 * The URL address for this plugin.
+	 *
+	 * @var string
 	 */
 	public $plugins_url;
 
@@ -26,15 +32,51 @@ class Boldgrid_Staging {
 	 * Constructor.
 	 */
 	public function __construct() {
-		// Load and check for plugin updates:
-		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-update.php';
-		$plugin_update = new Boldgrid_Staging_Update();
+		$this->plugins_url = plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/';
 
+		if ( current_user_can( 'manage_options' ) ) {
+			$this->load_dependencies();
+			$this->add_hooks();
+		}
+
+		$this->prepare_plugin_update();
+	}
+
+	/**
+	 * Prepare for the update class.
+	 *
+	 * @since 1.3.8
+	 */
+	public function prepare_plugin_update() {
+		$is_cron = ( defined( 'DOING_CRON' ) && DOING_CRON );
+		$is_wpcli = ( defined( 'WP_CLI' ) && WP_CLI );
+
+		if ( $is_cron || $is_wpcli || is_admin() ) {
+			require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-update.php';
+
+			if ( empty( $this->boldgrid_staging_config ) ) {
+				require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-config.php';
+				$this->boldgrid_staging_config = new Boldgrid_Staging_Config();
+			}
+
+			$plugin_update = new Boldgrid_Staging_Update( $this->boldgrid_staging_config->get_configs() );
+
+			add_action( 'init', array(
+				$plugin_update,
+				'add_hooks',
+			) );
+		}
+	}
+
+	/**
+	 * Load dependencies.
+	 *
+	 * @since 1.3.8
+	 */
+	public function load_dependencies() {
 		// Load and instantiate Boldgrid_Staging_Config:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-config.php';
 		$this->boldgrid_staging_config = new Boldgrid_Staging_Config();
-
-		$this->plugins_url = plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/';
 
 		// Include our base functions
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-base.php';
@@ -63,9 +105,6 @@ class Boldgrid_Staging {
 
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-dashboard-menus.php';
 		$this->dashboard_menus = new Boldgrid_Staging_Dashboard_Menus();
-
-		// Add hooks:
-		$this->add_hooks();
 	}
 
 	/**

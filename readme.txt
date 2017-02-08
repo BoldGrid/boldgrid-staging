@@ -2,7 +2,7 @@
 Contributors: imh_brad, joemoto, rramo012, timph
 Tags: inspiration,customization,build,create,design,staging
 Requires at least: 4.3
-Tested up to: 4.7.1
+Tested up to: 4.7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 2. Activate the plugin through the Plugins menu in WordPress.
 
 == Changelog ==
+
+= 1.3.8 In progress =
+* Bug fix:		JIRA WPB-2892	Fixed plugin update checks for some scenarios (WP-CLI, Plesk, etc).
 
 = 1.3.7 =
 * Bug fix:		JIRA WPB-2681	Staging switcher missing from Customizer.
