@@ -24,7 +24,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
-= 1.3.8 In progress =
+= 1.3.8 =
 * Bug fix:		JIRA WPB-2892	Fixed plugin update checks for some scenarios (WP-CLI, Plesk, etc).
 
 = 1.3.7 =
