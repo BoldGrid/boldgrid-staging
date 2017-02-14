@@ -73,18 +73,25 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 				'template_pre_option_update'
 			), 10, 2 );
 
-		// Add actions for widget_text:
-		add_action( 'pre_option_theme_mods_' . $this->staging_stylesheet,
-			array (
-				$this,
-				'theme_mods_pre_option'
-			) );
 
-		add_action( 'pre_update_option_theme_mods_' . $this->staging_stylesheet,
-			array (
-				$this,
-				'theme_mods_pre_option_update'
-			), 10, 2 );
+		/*
+		 * Filter getting and setting theme mods.
+		 *
+		 * In instances we don't have a staging stylesheet, add the hooks for the active stylesheet.
+		 *
+		 *   For getting theme mods, this will ensure active theme mods are never returned in
+		 *   instances we're expecting staged theme mods.
+		 *
+		 *   For setting theme mods, this will ensure we're not setting active theme mods when
+		 *   we're expecting to set staged theme mods.
+		 */
+		if( $this->staging_stylesheet ) {
+			add_action( 'pre_option_theme_mods_' . $this->staging_stylesheet, array( $this, 'theme_mods_pre_option' ) );
+			add_action( 'pre_update_option_theme_mods_' . $this->staging_stylesheet, array( $this, 'theme_mods_pre_option_update' ), 10, 2 );
+		} else {
+			add_action( 'pre_option_theme_mods_' . get_option( 'stylesheet' ), array( $this, 'theme_mods_pre_option' ) );
+			add_action( 'pre_update_option_theme_mods_' . get_option( 'stylesheet' ), array( $this, 'theme_mods_pre_option_update' ), 10, 2 );
+		}
 
 		/**
 		 * ********************************************************************
@@ -302,7 +309,12 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 */
 	public function theme_mods_pre_option( $content ) {
 		if ( $this->user_should_see_staging() || $this->updating_staging_theme_mods ) {
-			return get_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, array() );
+
+			if( $this->staging_stylesheet ) {
+				return get_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, array() );
+			} else {
+				return array();
+			}
 		}
 
 		return $content;
@@ -318,7 +330,10 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 */
 	public function theme_mods_pre_option_update( $new_value, $old_value ) {
 		if ( $this->user_should_see_staging() ) {
-			update_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, $new_value );
+
+			if( $this->staging_stylesheet ) {
+				update_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, $new_value );
+			}
 
 			return $old_value;
 		}

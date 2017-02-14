@@ -242,6 +242,11 @@ class Boldgrid_Staging_Base {
 	public function user_should_see_staging() {
 		global $pagenow;
 
+		// For instances in which staging needs to be forced, use the boldgrid_force_staging option.
+		if( '1' === get_option( 'boldgrid_force_staging' ) ) {
+			return true;
+		}
+
 		// Return the staging theme instead of the active theme when viewing the edit page
 		if ( in_array( $pagenow,
 			array (
