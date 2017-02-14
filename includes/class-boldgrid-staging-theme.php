@@ -302,7 +302,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 */
 	public function theme_mods_pre_option( $content ) {
 		if ( $this->user_should_see_staging() || $this->updating_staging_theme_mods ) {
-			return get_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet );
+			return get_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, array() );
 		}
 
 		return $content;
