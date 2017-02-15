@@ -159,6 +159,7 @@ class Boldgrid_Staging_Deployment {
 
 		$this->deploy_switch_theme();
 		$this->switch_pages_from_publish_to_staging();
+		$this->publish_posts();
 		$this->deploy_rename_pages_and_posts();
 		$this->switch_options();
 
@@ -215,6 +216,36 @@ class Boldgrid_Staging_Deployment {
 			} else {
 				include $this->dir_pages . '/pages/staging-deployment.php';
 			}
+		}
+	}
+
+	/**
+	 * Publish private posts.
+	 *
+	 * If you installed a Staging site via Inspirations, and that site included posts, those posts
+	 * were set to private.
+	 *
+	 * While deploying your staging site to active, all of those private posts will be published.
+	 *
+	 * @since 1.2.9
+	 */
+	public function publish_posts() {
+		$this->deploy_logger( '<p>' . __( 'Publishing posts...', 'boldgrid-staging' ) . '</p>' );
+
+		$private_posts = Boldgrid_Inspirations_Deploy_Metadata::get_private_posts();
+
+		foreach( $private_posts as $post_id ) {
+			$post = get_post( $post_id );
+
+			if( is_null( $post ) || 'private' !== $post->post_status ) {
+				continue;
+			}
+
+			$this->deploy_logger( '<li>' . esc_html( $post->post_title ) . '</li>' );
+
+			$post->post_status = 'publish';
+
+			wp_update_post( $post );
 		}
 	}
 
