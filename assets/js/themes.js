@@ -12,7 +12,7 @@
 var IMHWPB = IMHWPB || {};
 
 IMHWPB.StagingThemes = function( $ ) {
-	var self = this;
+	var self = this, unstageButton;
 
 	/**
 	 * Staging stylesheet.
@@ -77,17 +77,17 @@ IMHWPB.StagingThemes = function( $ ) {
 	 */
 	this.initStagedContainer = function() {
 		var $stagedThemeContainer = $( '.theme[data-slug="' + self.stagedTheme + '"]' ),
-			// "Unstage" button.
-			unstageThemeButton = "<a class='button button-secondary unstage'>" + BoldGridStagingThemes.Unstage + "</a>",
 			// The text, "Active & Staged".
 			activeAndStaged = BoldGridStagingThemes.Active + " & " + BoldGridStagingThemes.Staged;
+
+		unstageButton = "<a class='button button-secondary unstage'>" + BoldGridStagingThemes.Unstage + "</a>";
 
 		if ( self.activeTheme === self.stagedTheme ) {
 			// Change the text from "Active" to "Active & Staged".
 			self.$activeTheme.find( '.theme-name span:first' ).html( activeAndStaged );
 
 			// Add "Unstage" button before "Customize" button.
-			self.$activeTheme.find( '.customize' ).before( unstageThemeButton );
+			self.$activeTheme.find( '.customize' ).before( unstageButton );
 		} else {
 			// Add the active class.
 			$stagedThemeContainer.addClass( 'active' );
@@ -97,8 +97,25 @@ IMHWPB.StagingThemes = function( $ ) {
 				.children('.theme-name').prepend( '<span>' + BoldGridStagingThemes.Staged + ':</span> ');
 
 			// Add our "unstage" button.
-			$stagedThemeContainer.find( '.activate' ).after( unstageThemeButton );
+			$stagedThemeContainer.find( '.activate' ).after( unstageButton );
 		}
+	};
+
+	/**
+	 * @summary Actions to take upon clicking Theme Details.
+	 *
+	 * Display stage / unstage buttons.
+	 *
+	 * @since 1.3.9
+	 */
+	this.onThemeDetails = function() {
+		var $theme = $( this ).closest( '.theme' ),
+			stylesheet = $theme.attr( 'data-slug' ),
+			isStaged = $theme.find( 'a.unstage' ).length > 0,
+			button = isStaged ? unstageButton : self.createStageButton( stylesheet );
+
+		$( '.theme-actions .active-theme a' ).first().before( button );
+		$( '.theme-actions .inactive-theme a' ).first().after( button );
 	};
 
 	/**
@@ -152,14 +169,17 @@ IMHWPB.StagingThemes = function( $ ) {
 		});
 
 		// When clicking a "Stage" button, stage the theme.
-		$( '.themes' ).on( 'click', '.stage', function() {
+		$( '.wrap' ).on( 'click', '.stage', function() {
 			self.stageTheme( $( this ).attr( 'data-stylesheet' ) );
 		});
 
 		// When clicking an "Unstage" button, unstage the theme.
-		$( '.themes' ).on( 'click', '.unstage', function() {
+		$( '.wrap' ).on( 'click', '.unstage', function() {
 			self.unstageTheme();
 		});
+
+		// On clicking "Theme Details".
+		$( '.themes' ).on( 'click', '.theme-screenshot, .more-details', self.onThemeDetails );
 	};
 
 	/**
@@ -177,7 +197,7 @@ IMHWPB.StagingThemes = function( $ ) {
 
 		jQuery.post( ajaxurl + '?staging=1', data, function( response ) {
 			if ( 'success' === response ) {
-				window.location.href = window.location;
+				window.location.href = BoldGridStagingThemes.themesUrl;
 			} else {
 				alert( BoldGridStagingThemes.errorStagingTheme );
 			}
@@ -196,7 +216,7 @@ IMHWPB.StagingThemes = function( $ ) {
 
 		jQuery.post( ajaxurl, data, function(response) {
 			if ( 'success' === response ) {
-				window.location.href = window.location;
+				window.location.href = BoldGridStagingThemes.themesUrl;
 			} else {
 				alert( BoldGridStagingThemes.errorStagingTheme );
 			}

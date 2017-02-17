@@ -29,6 +29,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 * Bug fix:		JIRA WPB-2917	New staging deploy using active site's colors.
 * Bug fix:		JIRA WPB-2635	Start over staging affecting active site.
 * Bug fix:		JIRA WPB-2493	Publish private posts during staging deployment.
+* New feature:	JIRA WPB-2914	Add staging button to theme details modal.
 
 = 1.3.8 =
 * Bug fix:		JIRA WPB-2892	Fixed plugin update checks for some scenarios (WP-CLI, Plesk, etc).

@@ -244,6 +244,7 @@ class Boldgrid_Staging {
 					'Stage'               => __( 'Stage', 'boldgrid-staging' ),
 					'Staged'              => __( 'Staged', 'boldgrid-staging' ),
 					'Unstage'             => __( 'Unstage', 'boldgrid-staging' ),
+					'themesUrl'           => get_admin_url( null, 'themes.php' ),
 				));
 				break;
 
