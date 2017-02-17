@@ -12,7 +12,7 @@
 var IMHWPB = IMHWPB || {};
 
 IMHWPB.StagingThemes = function( $ ) {
-	var self = this, unstageButton;
+	var self = this, unstageButton, $themes, $wrap;
 
 	/**
 	 * Staging stylesheet.
@@ -112,10 +112,11 @@ IMHWPB.StagingThemes = function( $ ) {
 		var $theme = $( this ).closest( '.theme' ),
 			stylesheet = $theme.attr( 'data-slug' ),
 			isStaged = $theme.find( 'a.unstage' ).length > 0,
+			$actions = $( '.theme-actions' ),
 			button = isStaged ? unstageButton : self.createStageButton( stylesheet );
 
-		$( '.theme-actions .active-theme a' ).first().before( button );
-		$( '.theme-actions .inactive-theme a' ).first().after( button );
+		$actions.find( '.active-theme a' ).first().before( button );
+		$actions.find( '.inactive-theme a' ).first().after( button );
 	};
 
 	/**
@@ -144,6 +145,10 @@ IMHWPB.StagingThemes = function( $ ) {
 
 		self.activeTheme = self.$activeTheme.attr( 'data-slug' );
 
+		$themes = $( '.themes' );
+
+		$wrap = $( '.wrap' );
+
 		self.initStagedContainer();
 
 		/*
@@ -164,22 +169,20 @@ IMHWPB.StagingThemes = function( $ ) {
 		}
 
 		// When mousing over a theme, add a "Stage" button.
-		$( '.themes' ).on( 'mouseover', '.theme', function() {
+		$themes.on( 'mouseover', '.theme', function() {
 			self.addStageButton( $( this ) );
 		});
 
 		// When clicking a "Stage" button, stage the theme.
-		$( '.wrap' ).on( 'click', '.stage', function() {
+		$wrap.on( 'click', '.stage', function() {
 			self.stageTheme( $( this ).attr( 'data-stylesheet' ) );
 		});
 
 		// When clicking an "Unstage" button, unstage the theme.
-		$( '.wrap' ).on( 'click', '.unstage', function() {
-			self.unstageTheme();
-		});
+		$wrap.on( 'click', '.unstage', self.unstageTheme );
 
 		// On clicking "Theme Details".
-		$( '.themes' ).on( 'click', '.theme-screenshot, .more-details', self.onThemeDetails );
+		$themes.on( 'click', '.theme-screenshot, .more-details', self.onThemeDetails );
 	};
 
 	/**
@@ -222,8 +225,6 @@ IMHWPB.StagingThemes = function( $ ) {
 			}
 		});
 	};
-
-	self.init();
 };
 
 IMHWPB.StagingThemes( jQuery );
