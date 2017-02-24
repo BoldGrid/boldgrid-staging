@@ -36,13 +36,14 @@ class Boldgrid_Staging_Inspirations_Deploy extends Boldgrid_Staging_Base {
 	 *
 	 * This method grabs all those private posts and adds them to the list of pages.
 	 *
-	 * @param array $posts     An array of post objects.
-	 * @param array $installed An array of pages we've installed.
-	 *
 	 * @since 1.3.10
+	 *
+	 * @param  array $posts     An array of post objects.
+	 * @param  array $installed An array of pages we've installed.
+	 * @return array
 	 */
 	public function media_pages( $posts, $installed ) {
-		if( ! $this->user_should_see_staging() ) {
+		if ( ! $this->user_should_see_staging() ) {
 			return $posts;
 		}
 
@@ -53,7 +54,7 @@ class Boldgrid_Staging_Inspirations_Deploy extends Boldgrid_Staging_Base {
 		 */
 		foreach( $posts as $post ) {
 			if ( ( $key = array_search( $post->ID, $installed )) !== false ) {
-    			unset( $installed[ $key ] );
+				unset( $installed[ $key ] );
 			}
 		}
 
