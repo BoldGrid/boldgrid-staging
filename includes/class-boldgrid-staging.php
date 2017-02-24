@@ -105,6 +105,9 @@ class Boldgrid_Staging {
 
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-dashboard-menus.php';
 		$this->dashboard_menus = new Boldgrid_Staging_Dashboard_Menus();
+
+		require_once BOLDGRID_STAGING_PATH . '/includes/boldgrid-inspirations/class-boldgrid-staging-inspirations-deploy.php';
+		$this->inspirations_deploy = new Boldgrid_Staging_Inspirations_Deploy();
 	}
 
 	/**
@@ -153,6 +156,7 @@ class Boldgrid_Staging {
 		$this->staging_deployment->add_hooks();
 		$this->plugin_boldgrid_staging->add_hooks();
 		$this->dashboard_menus->add_hooks();
+		$this->inspirations_deploy->add_hooks();
 	}
 
 	/**
