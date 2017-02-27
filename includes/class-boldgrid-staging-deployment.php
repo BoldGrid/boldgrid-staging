@@ -230,6 +230,10 @@ class Boldgrid_Staging_Deployment {
 	 * @since 1.2.9
 	 */
 	public function publish_posts() {
+		if ( ! class_exists( 'Boldgrid_Inspirations_Deploy_Metadata' ) ) {
+			return;
+		}
+
 		$this->deploy_logger( '<p>' . __( 'Publishing posts...', 'boldgrid-staging' ) . '</p>' );
 
 		$private_posts = Boldgrid_Inspirations_Deploy_Metadata::get_private_posts();
