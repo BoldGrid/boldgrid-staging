@@ -1106,8 +1106,21 @@ span.permalink {
 	 * @param string $post_status.
 	 */
 	public static function is_contaminated( $post_status ) {
-		// Determine our session value.
-		if( ! isset( $_SESSION ) ) {
+
+		/*
+		 * Which site are you supposed to be viewing, active or staging?
+		 *
+		 * There are two ways you can view the front end of the site:
+		 * 1. You go to the front end of the site.
+		 * 2. You navigate pages from within the customizer.
+		 *
+		 * If you are on the front end, we'll determine active / staging based upon the $_SESSION.
+		 * If you are in the customizer preview, we'll determine active / staging based on whether
+		 * you're customizing your active or preview site.
+		 */
+		if ( is_customize_preview() ) {
+			$session_version = Boldgrid_Staging_Base::is_referer_staging() ? 'staging' : 'production';
+		} elseif ( ! isset( $_SESSION ) ) {
 			$session_version = 'production';
 		} else {
 			$session_version = ( 'staging' === $_SESSION['wp_staging_view_version'] ? 'staging' : 'production' );

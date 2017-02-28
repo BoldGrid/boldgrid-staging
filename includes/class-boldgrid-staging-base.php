@@ -123,7 +123,7 @@ class Boldgrid_Staging_Base {
 	 *
 	 * @return boolean
 	 */
-	public function is_referer_staging() {
+	public static function is_referer_staging() {
 		$parts = parse_url( wp_get_referer() );
 
 		if ( empty( $parts['query'] ) ) {
