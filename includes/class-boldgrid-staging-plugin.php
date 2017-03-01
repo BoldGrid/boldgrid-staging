@@ -306,6 +306,9 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			case 'post':
 				$post['post_status'] = 'private';
 				break;
+			case 'bg_attribution':
+				$post['post_name'] .= '-staging';
+				break;
 		}
 
 		return $post;
