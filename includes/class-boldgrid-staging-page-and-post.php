@@ -363,8 +363,15 @@ span.permalink {
 			}
 		} else {
 
-			// If we're looking for an attachment or a revision, return.
-			if ( 'attachment' == $post_type || 'revision' == $post_type ) {
+			// Not all post types are staged.
+			$types_not_staged = array(
+				'attachment',
+				'revision',
+				'bg_attribution',
+				'post',
+			);
+
+			if( in_array( $post_type, $types_not_staged ) ) {
 				return;
 			}
 
@@ -375,10 +382,8 @@ span.permalink {
 			 * a post, return, so other calls below are not ran.
 			 *
 			 * is_home(): Checks if the blog posts index page is being displayed.
-			 *
-			 * get_post_type(): Retrieve the post type of the current post or of a given post.
 			 */
-			if ( true == is_home() || 'post' == get_post_type() ) {
+			if ( is_home() ) {
 				return;
 			}
 
