@@ -1,35 +1,37 @@
 <?php
-/*
+/**
  * Plugin Name: BoldGrid Staging
- * Plugin URI: http://www.boldgrid.com
- * Version: 1.4
- * Author: BoldGrid.com <wpb@boldgrid.com>
- * Author URI: http://www.boldgrid.com
- * Description: Edit your website in a staging environment
+ * Plugin URI:  https://www.boldgrid.com
+ * Description: Edit your website in a staging environment.
+ * Version:     1.4
+ * Author:      BoldGrid <support@boldgrid.com>
+ * Author URI:  https://www.boldgrid.com
  * Text Domain: boldgrid-staging
  * Domain Path: /languages
- * License: GPLv2 or later
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * @package     boldgrid-staging
  */
 
 // Prevent direct calls.
-if ( false === defined( 'WPINC' ) ) {
+if ( ! defined( 'WPINC' ) ) {
 	header( 'Status: 403 Forbidden' );
 	header( 'HTTP/1.1 403 Forbidden' );
 	exit();
 }
 
 // Define version.
-if ( false === defined( 'BOLDGRID_STAGING_VERSION' ) ) {
+if ( ! defined( 'BOLDGRID_STAGING_VERSION' ) ) {
 	define( 'BOLDGRID_STAGING_VERSION', implode( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
 }
 
 // Define Editor path.
-if ( false === defined( 'BOLDGRID_STAGING_PATH' ) ) {
+if ( ! defined( 'BOLDGRID_STAGING_PATH' ) ) {
 	define( 'BOLDGRID_STAGING_PATH', dirname( __FILE__ ) );
 }
 
 // Define Editor configuration directory.
-if ( false === defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
+if ( ! defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
 	define( 'BOLDGRID_STAGING_CONFIGDIR', BOLDGRID_STAGING_PATH . '/includes/config' );
 }
 
