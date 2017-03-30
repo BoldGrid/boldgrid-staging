@@ -24,9 +24,6 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
-= 1.4.1 In progress =
-* Rework:		JIRA WPB-3096	Updated plugin header.
-
 = 1.4 =
 * Bug fix:		JIRA WPB-2951	Images in staging posts not being downloaded.
 * Bug fix:		JIRA WPB-2961	Fatal error: Class 'Boldgrid_Inspirations_Deploy_Metadata' not found.
