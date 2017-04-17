@@ -415,8 +415,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 */
 	public function boldgrid_deployment_deploy_theme_pre_return( $theme_folder_name ) {
 		// Abort if the user should not see staging.
-		if ( false == $this->user_should_see_staging() ||
-			 ( isset( $_POST['deploy-type'] ) && 'theme' == $_POST['deploy-type'] ) ) {
+		if ( false == $this->user_should_see_staging() ) {
 			return;
 		}
 
