@@ -22,9 +22,9 @@ class Boldgrid_Staging_Customizer {
 	 */
 	public static function is_referer() {
 		$file = '/customize.php';
-		$referer = parse_url( wp_get_referer() );
+		$referer = wp_parse_url( wp_get_referer() );
 
-		return( $file === substr( $referer['path'], -1 * strlen( $file ) ) );
+		return( substr( $referer['path'], -1 * strlen( $file ) ) === $file );
 	}
 
 	/**

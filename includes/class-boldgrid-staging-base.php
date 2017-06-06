@@ -76,9 +76,9 @@ class Boldgrid_Staging_Base {
 	/**
 	 * Create select pages
 	 *
-	 * @param int $select_id
+	 * @param int   $select_id
 	 * @param array $pages
-	 * @param id $option_id
+	 * @param id    $option_id
 	 * @param array $option_selected
 	 */
 	public function create_select_pages( $select_id, $pages, $option_selected, $params = array() ) {
@@ -93,9 +93,9 @@ class Boldgrid_Staging_Base {
 				$selected = $option_selected == $page->ID ? 'selected' : '';
 
 				$return .= "<option value='" . $page->ID . "' $selected>" . $page->post_title .
-					 "</option>";
+					 '</option>';
 			}
-			$return .= "</select>";
+			$return .= '</select>';
 		} else {
 			return false;
 		}
@@ -195,8 +195,8 @@ class Boldgrid_Staging_Base {
 		// Get the post ID. It could be set as several different keys in the $_REQUEST.
 		$possible_post_ids = array( 'post', 'post_id', 'post_ID' );
 
-		foreach( $possible_post_ids as $post_id ) {
-			if( ! empty( $_REQUEST[ $post_id ] ) ) {
+		foreach ( $possible_post_ids as $post_id ) {
+			if ( ! empty( $_REQUEST[ $post_id ] ) ) {
 				$post_id = intval( $_REQUEST[ $post_id ] );
 				break;
 			}
@@ -206,7 +206,7 @@ class Boldgrid_Staging_Base {
 			$post = get_post( $post_id );
 
 			// Is the user editing a page?
-			$is_editing = ( ! empty( $_REQUEST[ 'action' ] ) && 'editpost' === $_REQUEST[ 'action' ] );
+			$is_editing = ( ! empty( $_REQUEST['action'] ) && 'editpost' === $_REQUEST['action'] );
 
 			/*
 			 * When editing a page, options for 'Active' and 'Staging' are listed under "Development Group"
@@ -216,7 +216,7 @@ class Boldgrid_Staging_Base {
 			 *
 			 * Do we have 'development_group_post_status' in the $_REQUEST?
 			 */
-			$has_dev_group = ( ! empty( $_REQUEST[ 'development_group_post_status' ] ) );
+			$has_dev_group = ( ! empty( $_REQUEST['development_group_post_status'] ) );
 
 			/*
 			 * If we are editing a page and 'development_group_post_status' is in the $_REQUEST,
@@ -224,8 +224,8 @@ class Boldgrid_Staging_Base {
 			 *
 			 * Else, the post_status will be whatever $post->post_status is actually set to.
 			 */
-			if( $is_editing && $has_dev_group ) {
-				return ( 'staging' === $_REQUEST[ 'development_group_post_status' ] );
+			if ( $is_editing && $has_dev_group ) {
+				return ( 'staging' === $_REQUEST['development_group_post_status'] );
 			} else {
 				return ( $post && 'staging' === $post->post_status );
 			}
@@ -243,76 +243,52 @@ class Boldgrid_Staging_Base {
 		global $pagenow;
 
 		// For instances in which staging needs to be forced, use the boldgrid_force_staging option.
-		if( '1' === get_option( 'boldgrid_force_staging' ) ) {
+		if ( '1' === get_option( 'boldgrid_force_staging' ) ) {
 			return true;
 		}
 
 		// Return the staging theme instead of the active theme when viewing the edit page
-		if ( in_array( $pagenow,
-			array (
-				'post-new.php',
-				"post.php",
-				'media-upload.php'
-			) ) ) {
-
+		if ( in_array( $pagenow, array( 'post-new.php', 'post.php', 'media-upload.php' ) ) ) {
 			return $this->is_staging_post();
 		}
 
 		if ( 'admin-ajax.php' == $pagenow ) {
-
 			$action = ! empty( $_POST['action'] ) ? $_POST['action'] : '';
 			if ( 'boldgrid_gridblock_html' == $action ) {
 				return $this->is_staging_post();
 			}
 		}
 
-		/**
-		 * Configure some vars
-		 */
-		$wp_staging_in_session = ( isset( $_SESSION['wp_staging_view_version'] ) &&
-			 'staging' == $_SESSION['wp_staging_view_version'] );
+		$view_version = ( isset( $_SESSION['wp_staging_view_version'] ) && 'staging' == $_SESSION['wp_staging_view_version'] );
 
 		// Customizer related checks.
-		if( $this->in_customize ) {
+		if ( $this->in_customize ) {
 			return $this->staging_in_url;
-		} elseif( is_customize_preview() ) {
+		} elseif ( is_customize_preview() ) {
 			return $this->is_referer_staging();
-		} elseif( Boldgrid_Staging_Customizer::is_referer() && Boldgrid_Staging_Customizer::in_changeset_preview() ) {
+		} elseif ( Boldgrid_Staging_Customizer::is_referer() && Boldgrid_Staging_Customizer::in_changeset_preview() ) {
 			return $this->is_referer_staging();
 		}
 
-		/**
-		 * If we're in the dashboard and passing in $_POST['staging']...
-		 */
+		// If we're in the dashboard and passing in $_POST['staging'].
 		if ( is_admin() && isset( $_POST['staging'] ) && 1 == $_POST['staging'] ) {
 			return true;
 		}
 
-		/**
-		 * If the user can 'manage_options'
-		 */
+		// If the user can 'manage_options'.
 		if ( current_user_can( 'manage_options' ) ) {
-			/**
-			 * For the dashboard
-			 */
 			if ( is_admin() ) {
 				if ( $this->staging_in_url ) {
 					return true;
 				}
 			} else {
-				/**
-				 * For the front end
-				 */
-				// standard approach
-				if ( true == $wp_staging_in_session ) {
+				if ( true == $view_version ) {
 					return true;
 				}
 			}
 		}
 
-		/**
-		 * If we are saving changes to a staged page...
-		 */
+		// If we are saving changes to a staged page.
 		if ( isset( $_REQUEST['action'] ) && 'editpost' == $_REQUEST['action'] &&
 			 isset( $_REQUEST['hidden_post_status'] ) && 'staging' == $_REQUEST['hidden_post_status'] ) {
 			return true;
