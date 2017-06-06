@@ -108,6 +108,8 @@ class Boldgrid_Staging {
 
 		require_once BOLDGRID_STAGING_PATH . '/includes/boldgrid-inspirations/class-boldgrid-staging-inspirations-deploy.php';
 		$this->inspirations_deploy = new Boldgrid_Staging_Inspirations_Deploy();
+
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-customizer.php';
 	}
 
 	/**

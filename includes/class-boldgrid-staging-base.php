@@ -272,9 +272,12 @@ class Boldgrid_Staging_Base {
 		$wp_staging_in_session = ( isset( $_SESSION['wp_staging_view_version'] ) &&
 			 'staging' == $_SESSION['wp_staging_view_version'] );
 
+		// Customizer related checks.
 		if( $this->in_customize ) {
 			return $this->staging_in_url;
 		} elseif( is_customize_preview() ) {
+			return $this->is_referer_staging();
+		} elseif( Boldgrid_Staging_Customizer::is_referer() && Boldgrid_Staging_Customizer::in_changeset_preview() ) {
 			return $this->is_referer_staging();
 		}
 
