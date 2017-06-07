@@ -2,7 +2,7 @@
 Contributors: imh_brad, joemoto, rramo012, timph
 Tags: inspiration,customization,build,create,design,staging
 Requires at least: 4.3
-Tested up to: 4.7.4
+Tested up to: 4.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 = 1.4.1 =
 * Bug fix:		JIRA WPB-3151	Added check and load before using get_plugin_data() for updates.
 * Update:		JIRA WPB-3106	Cleanup deploy type.
+
+= 1.4.0.1 =
+* Bug fix:		JIRA WPB-3213	Footer displays atop page in customizer when going from staging to active.
 
 = 1.4 =
 * Bug fix:		JIRA WPB-2951	Images in staging posts not being downloaded.
