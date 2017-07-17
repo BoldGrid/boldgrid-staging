@@ -45,6 +45,7 @@ function boldgrid_staging_init() {
 	// Initialize BoldGrid Staging for site visitors/users who cannot 'manage_options'.
 	if ( ! current_user_can( 'manage_options' ) ) {
 		// Register custom post status for all others:
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-customizer.php';
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-base.php';
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-page-and-post.php';
 		Boldgrid_Staging_Page_And_Post_Staging::page_register_post_status_development_group();
