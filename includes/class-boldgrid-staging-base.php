@@ -247,6 +247,15 @@ class Boldgrid_Staging_Base {
 			return true;
 		}
 
+		/*
+		 * Currently, only logged in admins can see staged content. This may
+		 * change in the future, but for now if the user is not logged in,
+		 * they will not be shown any staged content.
+		 */
+		if( ! is_user_logged_in() ) {
+			return false;
+		}
+
 		// Return the staging theme instead of the active theme when viewing the edit page
 		if ( in_array( $pagenow, array( 'post-new.php', 'post.php', 'media-upload.php' ) ) ) {
 			return $this->is_staging_post();
