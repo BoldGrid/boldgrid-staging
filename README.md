@@ -3,7 +3,7 @@
 
 # BoldGrid Staging #
 **Contributors:** imh_brad, joemoto, rramo012, timph
-**Tags:** inspiration,customization,build,create,design,staging
+**Tags:** staging, duplication, clone
 **Requires at least:** 4.3
 **Tested up to:** 4.8
 **License:** GPLv2 or later
