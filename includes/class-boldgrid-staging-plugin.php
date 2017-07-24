@@ -258,7 +258,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			case 'transactions_page_boldgrid-cart':
 				wp_enqueue_script( 'boldgrid-staging-cart',
 									$this->plugins_url . 'assets/js/boldgrid-staging-cart.js',
-									array (),
+									array( 'wp-util' ),
 									BOLDGRID_STAGING_VERSION,
 									true
 				);
