@@ -36,6 +36,8 @@ if ( false === defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
 // Load only in the admin section for Administrators.
 require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging.php';
 
+require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+
 /**
  * Plugin init.
  */

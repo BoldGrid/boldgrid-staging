@@ -340,7 +340,7 @@ class Boldgrid_Staging_Deployment {
 			// Check the $property name.
 			if ( '-staging-tmp' != substr( $menu->$property, - 12 ) ) {
 				// Calculate the new $property name.
-				$new_property_name = $menu->$property . '-staging-tmp';
+				$new_property_name = Boldgrid\WpMenuHelpers\Name::createUnique( $menu->$property . '-staging-tmp' );
 
 				// Print a log to the screen.
 				$this->deploy_logger(
@@ -408,7 +408,7 @@ class Boldgrid_Staging_Deployment {
 			// Check the $property name.
 			if ( '-staging' == substr( $menu->$property, - 8 ) ) {
 				// Calculate the new $property name.
-				$new_property_name = substr( $menu->$property, 0, - 8 );
+				$new_property_name = Boldgrid\WpMenuHelpers\Name::createUnique( substr( $menu->$property, 0, - 8 ) );
 
 				// Print a log to the screen.
 				$this->deploy_logger(
@@ -449,7 +449,7 @@ class Boldgrid_Staging_Deployment {
 			// Check the $property name.
 			if ( '-staging-tmp' == substr( $menu->$property, - 12 ) ) {
 				// Calculate the new $property name.
-				$new_property_name = substr( $menu->$property, 0, - 4 );
+				$new_property_name = Boldgrid\WpMenuHelpers\Name::createUnique( substr( $menu->$property, 0, - 4 ) );
 
 				// Print a log to the screen.
 				$this->deploy_logger(
