@@ -1,11 +1,5 @@
 {
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/boldgrid/wp-menu-helpers"
-        }
-    ],
     "require": {
-        "boldgrid/wp-menu-helpers": "dev-master"
+        "boldgrid/wp-menu-helpers": "^1.0.0"
     }
 }
