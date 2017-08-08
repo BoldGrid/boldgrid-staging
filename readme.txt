@@ -1,8 +1,8 @@
 === BoldGrid Staging ===
 Contributors: imh_brad, joemoto, rramo012, timph
 Tags: staging, duplication, clone
-Requires at least: 4.3
-Tested up to: 4.8
+Requires at least: 4.4
+Tested up to: 4.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,9 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 2. Activate the plugin through the Plugins menu in WordPress.
 
 == Changelog ==
+
+= 1.5 =
+* Update:						Bump version.
 
 = 1.4.5 =
 * Bug fix:		JIRA WPB-3351	wp.template is not a function.

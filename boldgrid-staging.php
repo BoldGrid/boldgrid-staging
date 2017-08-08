@@ -2,9 +2,9 @@
 /*
  * Plugin Name: BoldGrid Staging
  * Plugin URI: https://www.boldgrid.com/boldgrid-staging/
- * Version: 1.4.5
+ * Version: 1.5
  * Author: BoldGrid.com <wpb@boldgrid.com>
- * Author URI: https://www.boldgrid.com
+ * Author URI: https://www.boldgrid.com/
  * Description: Edit your website in a staging environment
  * Text Domain: boldgrid-staging
  * Domain Path: /languages
