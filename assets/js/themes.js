@@ -54,7 +54,7 @@ IMHWPB.StagingThemes = function( $ ) {
 
 		// If this theme is not already staged AND doesn't have a "Stage" button, add one.
 		if( self.stagedTheme !== stylesheet && 0 === existingStageButton.length ) {
-				$theme.children( '.theme-actions' ).children( '.activate' ).after( stageButton );
+				$theme.find( '.activate' ).after( stageButton );
 		}
 	};
 
