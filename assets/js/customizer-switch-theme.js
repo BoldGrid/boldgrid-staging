@@ -64,15 +64,27 @@ IMHWPB.Staging_Customizer_Switch_Theme = function( $ ) {
 		// Modify the text.
 		if ('1' == staging_in_url) {
 			var staging_theme_html = "<strong>Staged theme</strong>";
-			active_theme_html = "<a href='customize.php?return=" + return_in_url
+			active_theme_html = "<a class='staging-switch' href='customize.php?return=" + return_in_url
 					+ "'><em>Active theme</em></a>";
 		} else {
 			active_theme_html = '<strong>' + active_theme_html + "</strong>";
-			var staging_theme_html = "<a href='customize.php?return=" + return_in_url
+			var staging_theme_html = "<a class='staging-switch' href='customize.php?return=" + return_in_url
 					+ "&staging=1'><em>Staged theme</em></a>";
 		}
 
 		jQuery(active_theme_span).html(active_theme_html + " / " + staging_theme_html);
+
+		/*
+		 * Force active / staged links to navigate to href.
+		 *
+		 * As of WordPress 4.9, clicking anywhere within the
+		 * .accordion-section-title opens the Themes panel. Instead, we just
+		 * need to navigate to the link's href.
+		 */
+		$( '.staging-switch' ).on( 'click', function() {
+			window.location = $( this ).attr( 'href' );
+			return false;
+		});
 	}
 
 	/**
