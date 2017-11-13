@@ -19,6 +19,15 @@ if ( ! defined( 'WPINC' ) ) {
  * BoldGrid Staging Deployment class
  */
 class Boldgrid_Staging_Deployment {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
 	/**
 	 * Menu properties to check
 	 *
@@ -48,9 +57,15 @@ class Boldgrid_Staging_Deployment {
 	public $template_renamed = '<li>Renaming <strong>menu %s</strong> from <em>%s</em> to <em>%s</em>.</li>';
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @since unknown
+	 *
+	 * @param Boldgrid_Staging $core
 	 */
-	public function __construct() {
+	public function __construct( $core ) {
+		$this->core = $core;
+
 		$this->dir_pages = BOLDGRID_STAGING_PATH;
 
 		$this->all_staged_pages = get_posts(
@@ -922,7 +937,6 @@ class Boldgrid_Staging_Deployment {
 	 * Switch options
 	 */
 	public function switch_options() {
-		$boldgrid_staging_option = new Boldgrid_Staging_Option();
 
 		// An array of options that need to be switched between Active / Staging.
 		$switch_options = array (
@@ -942,7 +956,7 @@ class Boldgrid_Staging_Deployment {
 
 		// In addition to the options above, there may be other options that need to be switched.
 		// Those other options are stored in $boldgrid_staging_option->options_to_stage.
-		$switch_options = array_merge( $switch_options, $boldgrid_staging_option->options_to_stage );
+		$switch_options = array_merge( $switch_options, $this->core->option_staging->options_to_stage );
 
 		$this->deploy_logger( '<p>Switching various options...</p>' );
 

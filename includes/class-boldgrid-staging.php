@@ -101,7 +101,7 @@ class Boldgrid_Staging {
 	public function __construct() {
 		global $pagenow;
 
-		$this->doing = defined( 'DOING_AJAX' ) && DOING_AJAX;
+		$this->doing_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$this->pagenow = $pagenow;
 		$this->staging_in_url = isset( $_REQUEST['staging'] ) && '1' === $_REQUEST['staging'];
 
@@ -310,9 +310,9 @@ class Boldgrid_Staging {
 		$this->option_staging          = new BoldGrid_Staging_Option( $this );
 		$this->menu_staging            = new Boldgrid_Staging_Menu( $this );
 		$this->staging_switcher        = new Boldgrid_Staging_Switcher( $this );
-		$this->staging_deployment      = new Boldgrid_Staging_Deployment();
+		$this->staging_deployment      = new Boldgrid_Staging_Deployment( $this );
 		$this->plugin_boldgrid_staging = new Boldgrid_Staging_Plugin( $this );
-		$this->dashboard_menus         = new Boldgrid_Staging_Dashboard_Menus();
+		$this->dashboard_menus         = new Boldgrid_Staging_Dashboard_Menus( $this );
 		$this->inspirations_deploy     = new Boldgrid_Staging_Inspirations_Deploy( $this );
 		$this->session                 = new Boldgrid_Staging_Session( $this );
 
@@ -498,17 +498,12 @@ class Boldgrid_Staging {
 	 * @since 1.0.7
 	 */
 	public function enqueue_scripts_options_reading() {
-		// Include our Boldgrid_Staging_Option class.
-		// This class contains a public "options_to_stage" property, which we need.
-		include_once ( 'class-boldgrid-staging-option.php' );
-		$boldgrid_staging_option = new Boldgrid_Staging_Option();
-
 		wp_register_script( 'hook.options-reading.php.js',
 			BOLDGRID_STAGING_URL . 'assets/js/hook.options-reading.php.js', array( 'jquery', 'wp-util' ),
 			BOLDGRID_STAGING_VERSION, true );
 
 		wp_localize_script( 'hook.options-reading.php.js', 'boldgrid_staging_options_to_stage',
-			$boldgrid_staging_option->options_to_stage );
+			$this->option_staging->options_to_stage );
 
 		wp_enqueue_script( 'hook.options-reading.php.js' );
 	}

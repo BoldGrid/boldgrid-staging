@@ -19,6 +19,26 @@ if ( ! defined( 'WPINC' ) ) {
  * BoldGrid Staging DashBoard Menus class
  */
 class Boldgrid_Staging_Dashboard_Menus {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @param Boldgrid_Staging $core
+	 */
+	public function __construct( $core ) {
+		$this->core = $core;
+	}
+
 	/**
 	 * Add hooks
 	 */
@@ -462,9 +482,7 @@ class Boldgrid_Staging_Dashboard_Menus {
 	/**
 	 */
 	public function display_staging_menu_page() {
-		$boldgrid_staging_deployment = new Boldgrid_Staging_Deployment();
-
-		$boldgrid_staging_deployment->display_staging_menu_page();
+		$this->core->staging_deployment->display_staging_menu_page();
 	}
 
 	/**
