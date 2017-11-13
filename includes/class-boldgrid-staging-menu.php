@@ -18,12 +18,25 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * BoldGrid Menu Staging
  */
-class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
+class Boldgrid_Staging_Menu {
+
 	/**
-	 * Constructor
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
 	 */
-	public function __construct() {
-		parent::__construct();
+	public $core;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since unknown
+	 *
+	 * @param Boldgrid_Staging $core
+	 */
+	public function __construct( $core ) {
+		$this->core = $core;
 	}
 
 	/**
@@ -79,7 +92,7 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 		}
 
 		// Should the user see staging?
-		$should_see_staging = $this->user_should_see_staging();
+		$should_see_staging = $this->core->base->user_should_see_staging();
 
 		foreach( $terms as $key => $term ) {
 
@@ -252,7 +265,7 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 		 * * );
 		 * ?>
 		 */
-		if ( $this->user_should_see_staging() && isset( $args['menu'] ) ) {
+		if ( $this->core->base->user_should_see_staging() && isset( $args['menu'] ) ) {
 			$args['menu'] = '';
 		}
 
@@ -271,7 +284,7 @@ class Boldgrid_Staging_Menu extends Boldgrid_Staging_Base {
 	 * @param array $args An array of page menu arguments.
 	 */
 	public function wp_page_menu_args( $args ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$args[ 'post_status' ] = array( 'staging' );
 		}
 

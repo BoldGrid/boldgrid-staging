@@ -18,9 +18,25 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * BoldGrid Staging Plugin class
  */
-class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
-	public function __construct() {
-		parent::__construct();
+class Boldgrid_Staging_Plugin {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since unknown
+	 *
+	 * @param Boldgrid_Staging $core
+	 */
+	public function __construct( $core ) {
+		$this->core = $core;
 	}
 
 	/**
@@ -249,7 +265,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			case 'post-new.php' :
 			case 'post.php' :
 				wp_enqueue_script( 'edit.php.js',
-					$this->plugins_url . 'assets/js/manage-menu-assignment-within-editor.js',
+					BOLDGRID_STAGING_URL . 'assets/js/manage-menu-assignment-within-editor.js',
 					array (), BOLDGRID_STAGING_VERSION, true );
 				break;
 
@@ -257,13 +273,13 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			case 'boldgrid_page_boldgrid-cart':
 			case 'transactions_page_boldgrid-cart':
 				wp_enqueue_script( 'boldgrid-staging-cart',
-									$this->plugins_url . 'assets/js/boldgrid-staging-cart.js',
+									BOLDGRID_STAGING_URL . 'assets/js/boldgrid-staging-cart.js',
 									array( 'wp-util' ),
 									BOLDGRID_STAGING_VERSION,
 									true
 				);
 				wp_enqueue_style(	'boldgrid-staging-cart',
-									$this->plugins_url . 'assets/css/boldgrid-staging-cart.css',
+									BOLDGRID_STAGING_URL . 'assets/css/boldgrid-staging-cart.css',
 									array(),
 									BOLDGRID_STAGING_VERSION
 				);
@@ -288,7 +304,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 */
 	public function boldgrid_deployment_pre_insert_post( $post ) {
 		// Abort if necessary.
-		if ( ! $this->user_should_see_staging() ) {
+		if ( ! $this->core->base->user_should_see_staging() ) {
 			return $post;
 		}
 
@@ -322,7 +338,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function boldgrid_deployment_primary_menu_name( $menu_name ) {
-		if ( false == $this->user_should_see_staging() ) {
+		if ( false == $this->core->base->user_should_see_staging() ) {
 			return $menu_name;
 		} else {
 			return $menu_name . '-staging';
@@ -347,7 +363,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string Either 'boldgrid_attribtuion' or 'boldgrid_staging_boldgrid_attribition'.
 	 */
 	public function boldgrid_attribution_filter( $option ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			return 'boldgrid_staging_' . $option;
 		} else {
 			return $option;
@@ -378,7 +394,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function boldgrid_attribution_post_status_to_search( $post_status_to_search ) {
-		if ( true == $this->user_should_see_staging() ) {
+		if ( true == $this->core->base->user_should_see_staging() ) {
 			$post_status_to_search = "'staging'";
 		}
 
@@ -390,7 +406,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 */
 	public function boldgrid_change_links_to_attribution() {
 		// Abort if the user should not see staging.
-		if ( false == $this->user_should_see_staging() ) {
+		if ( false == $this->core->base->user_should_see_staging() ) {
 			return;
 		}
 
@@ -415,11 +431,11 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 */
 	public function boldgrid_deployment_deploy_theme_pre_return( $theme_folder_name ) {
 		// Abort if the user should not see staging.
-		if ( false == $this->user_should_see_staging() ) {
+		if ( false == $this->core->base->user_should_see_staging() ) {
 			return;
 		}
 
-		$previous_staging_stylesheet = $this->staging_stylesheet;
+		$previous_staging_stylesheet = $this->core->staging_stylesheet;
 
 		// We just installed a theme via BoldGrid Inspirations and it's a staging install,
 		// go ahead and update stylesheet options.
@@ -428,7 +444,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 
 		// There are certain features that rely on whether or not there is a staging theme set.
 		// We just set it, so set this option.
-		$this->set_has_staging_theme();
+		$this->core->set_staging_theme();
 
 		/*
 		 * Below, we are adding to actions. We only want to add those actions once however. If the
@@ -436,21 +452,16 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 		 * abort.
 		 */
 		if ( $previous_staging_stylesheet != $theme_folder_name ) {
-			// In order to run the two actions below,
-			// we need to include and create another instance of the theme_staging class.
-			require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-theme.php';
-			$this->theme_staging = new Boldgrid_Staging_Theme();
-
 			// Add actions for widget_text:
-			add_action( 'pre_option_theme_mods_' . $this->staging_stylesheet,
+			add_action( 'pre_option_theme_mods_' . $this->core->staging_stylesheet,
 				array (
-					$this->theme_staging,
+					$this->core->theme_staging,
 					'theme_mods_pre_option'
 				) );
 
-			add_action( 'pre_update_option_theme_mods_' . $this->staging_stylesheet,
+			add_action( 'pre_update_option_theme_mods_' . $this->core->staging_stylesheet,
 				array (
-					$this->theme_staging,
+					$this->core->theme_staging,
 					'theme_mods_pre_option_update'
 				), 10, 2 );
 		}
@@ -547,7 +558,17 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function boldgrid_asset_pre_option( $content ) {
-		if ( $this->user_should_see_staging() || true === $this->is_working_with_a_staged_page() ) {
+
+		/*
+		 * If it has been flagged to force the unfiltered option, return it now.
+		 *
+		 * This is a hack for Boldgrid_Inspirations_Asset_Manager::get_active_assets().
+		 */
+		if( '1' === get_option( 'boldgrid_staging_get_unfiltered_boldgrid_asset' ) ) {
+			return $content;
+		}
+
+		if ( $this->core->base->user_should_see_staging() || true === $this->is_working_with_a_staged_page() ) {
 			$boldgrid_asset = get_option( 'boldgrid_staging_boldgrid_asset' );
 
 			return $boldgrid_asset;
@@ -565,7 +586,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function boldgrid_asset_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() || true === $this->is_working_with_a_staged_page() ) {
+		if ( $this->core->base->user_should_see_staging() || true === $this->is_working_with_a_staged_page() ) {
 			update_option( 'boldgrid_staging_boldgrid_asset', $new_value );
 
 			return $old_value;
@@ -582,7 +603,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_attribution_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$attribution = get_option( 'boldgrid_staging_boldgrid_attribution' );
 
 			// If the option does not exist, it returns false. If we return false, then get_option
@@ -606,7 +627,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_attribution_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_attribution', $new_value );
 
 			return $old_value;
@@ -626,7 +647,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array An array of post_status.
 	 */
 	public function boldgrid_cart_post_status( $post_status ) {
-		$post_status = $this->user_should_see_staging() ? array( 'staging' ) : $post_status;
+		$post_status = $this->core->base->user_should_see_staging() ? array( 'staging' ) : $post_status;
 
 		return $post_status;
 	}
@@ -639,7 +660,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function boldgrid_has_built_site_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			( $built_site = get_option( 'boldgrid_staging_boldgrid_has_built_site' ) ) ||
 				 ( $built_site = 'no' );
 
@@ -658,7 +679,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function boldgrid_has_built_site_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_has_built_site', $new_value );
 
 			return $old_value;
@@ -736,7 +757,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 			 'boldgrid-add-gridblock-sets' == $_GET['page'] );
 
 		if ( $in_new_from_gridblocks_page ) {
-			$_SESSION['wp_staging_view_version'] = ( $this->user_should_see_staging() ? 'staging' : 'production' );
+			$_SESSION['wp_staging_view_version'] = ( $this->core->base->user_should_see_staging() ? 'staging' : 'production' );
 		}
 	}
 
@@ -749,7 +770,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 *        	A WordPress page id.
 	 */
 	public function boldgrid_inspirations_post_gridblock_set_create_page_callback( $page_id ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_post_meta( $page_id, 'new_gridblock_set_staging', true );
 		}
 	}
@@ -762,7 +783,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_install_options_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$install_options = get_option( 'boldgrid_staging_boldgrid_install_options' );
 
 			return $install_options;
@@ -780,7 +801,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_install_options_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_install_options', $new_value );
 
 			return $old_value;
@@ -797,7 +818,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_installed_page_ids_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$installed_page_ids = get_option( 'boldgrid_staging_boldgrid_installed_page_ids' );
 
 			return $installed_page_ids;
@@ -815,7 +836,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_installed_page_ids_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_installed_page_ids', $new_value );
 
 			return $old_value;
@@ -831,7 +852,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_installed_pages_metadata_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$installed_pages_metadata = get_option(
 				'boldgrid_staging_boldgrid_installed_pages_metadata' );
 
@@ -850,7 +871,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array
 	 */
 	public function boldgrid_installed_pages_metadata_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_installed_pages_metadata', $new_value );
 
 			return $old_value;
@@ -869,7 +890,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 */
 	public function boldgrid_menus_created_pre_option() {
 		// The 'boldgrid_get_unfiltered_option' option have been available here @since 1.3.2.
-		if ( $this->user_should_see_staging() && 'true' !== get_option( 'boldgrid_get_unfiltered_option' ) ) {
+		if ( $this->core->base->user_should_see_staging() && 'true' !== get_option( 'boldgrid_get_unfiltered_option' ) ) {
 			return get_option( 'boldgrid_staging_boldgrid_menus_created', array () );
 		} else {
 			return false;
@@ -888,7 +909,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return mixed Depending on if staging, either $new_value or $old_value.
 	 */
 	public function boldgrid_menus_created_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_menus_created', $new_value );
 
 			return $old_value;
@@ -927,7 +948,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return array BoldGrid Theme Framework config.
 	 */
 	public function boldgrid_theme_framework_config( $config ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			// If this theme has default menus set:
 			if ( isset( $config['menu']['default-menus'] ) &&
 				 is_array( $config['menu']['default-menus'] ) ) {
@@ -959,7 +980,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return mixed The value of the boldgrid_staging_boldgrid_widgets_created option.
 	 */
 	public function boldgrid_widgets_created_pre_option() {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			return get_option( 'boldgrid_staging_boldgrid_widgets_created', array () );
 		} else {
 			return false;
@@ -978,7 +999,7 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return mixed Depending on if staging, either $new_value or $old_value.
 	 */
 	public function boldgrid_widgets_created_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_boldgrid_widgets_created', $new_value );
 
 			return $old_value;
@@ -1024,6 +1045,6 @@ class Boldgrid_Staging_Plugin extends Boldgrid_Staging_Base {
 	 * @return bool
 	 */
 	public function pre_set_permalinks( $set_permalinks ) {
-		return $this->user_should_see_staging() ? false : $set_permalinks;
+		return $this->core->base->user_should_see_staging() ? false : $set_permalinks;
 	}
 }

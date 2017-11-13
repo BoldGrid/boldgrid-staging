@@ -33,6 +33,10 @@ if ( false === defined( 'BOLDGRID_STAGING_CONFIGDIR' ) ) {
 	define( 'BOLDGRID_STAGING_CONFIGDIR', BOLDGRID_STAGING_PATH . '/includes/config' );
 }
 
+if ( false === defined( 'BOLDGRID_STAGING_URL' ) ) {
+	define( 'BOLDGRID_STAGING_URL', plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/' );
+}
+
 // Load only in the admin section for Administrators.
 require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging.php';
 
@@ -43,62 +47,7 @@ require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
  */
 function boldgrid_staging_init() {
 	$staging = new Boldgrid_Staging();
-
-	// Initialize BoldGrid Staging for site visitors/users who cannot 'manage_options'.
-	if ( ! current_user_can( 'manage_options' ) ) {
-		// Register custom post status for all others:
-		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-customizer.php';
-		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-base.php';
-		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-page-and-post.php';
-		Boldgrid_Staging_Page_And_Post_Staging::page_register_post_status_development_group();
-
-		/**
-		 * Handle redirects.
-		 *
-		 * Scenario 1: A once published page is now staged, and has a redirect to go to another
-		 * page.
-		 *
-		 * Scenario 2: A once published page was staged then trashed, and has a redirect to go to
-		 * another page.
-		 */
-		// Prevent staged pages from showing on the front-end of the site or redirect.
-		add_filter( 'parse_query',
-			array (
-				'Boldgrid_Staging_Page_And_Post_Staging',
-				'prevent_public_from_seeing_staged_pages'
-			), 20 );
-
-		add_filter( 'template_redirect',
-			array (
-				'Boldgrid_Staging_Page_And_Post_Staging',
-				'prevent_public_from_seeing_staged_pages'
-			) );
-
-		// Visitors to the front end of the site, prevent them from accessing the attribution-staging page.
-		add_filter( 'boldgrid_staging_is_contaminated', array( 'Boldgrid_Staging_Page_And_Post_Staging', 'is_contaminated' ) );
-	}
-
-	/*
-	 * Begin adding hooks, regardless of user's privileges.
-	 *
-	 * The above init is based upon whether or not the user can manage_options. This may not be the
-	 * ideal check.
-	 *
-	 * Example:
-	 * Let's say I want to filter search results on the front end of the site so no staging pages
-	 * show up on the active site's search (and vice versa). If using the manage_options check
-	 * above, I'd have to add filters to both the if and else, because regardless of your
-	 * privileges, you shouldn't see contaminated search results.
-	 *
-	 * @since 1.3.5
-	 *
-	 * @todo: Update loading of plugin.
-	 */
-
-	require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-search.php';
-
-	$search = new Boldgrid_Staging_Search();
-	$search->add_hooks();
+	$staging->init();
 }
 
 /*

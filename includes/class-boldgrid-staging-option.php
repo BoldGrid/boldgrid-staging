@@ -18,7 +18,16 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * BoldGrid Option Staging
  */
-class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
+class Boldgrid_Staging_Option {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
 	/**
 	 * WordPress options that are staged.
 	 *
@@ -54,9 +63,14 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	public $values_before_deletion = array();
 
 	/**
+	 * Constructor.
+	 *
+	 * @since unknown
+	 *
+	 * @param Boldgrid_Staging $core
 	 */
-	public function __construct() {
-		parent::__construct();
+	public function __construct( $core ) {
+		$this->core = $core;
 
 		// Are we in the customizer?
 		$this->is_customizer = ( isset( $_REQUEST['wp_customize'] ) and
@@ -213,7 +227,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function blogdescription_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$blogdescription = get_option( 'boldgrid_staging_blogdescription' );
 
 			return $blogdescription;
@@ -231,7 +245,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function blogdescription_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_blogdescription', $new_value );
 
 			return $old_value;
@@ -248,7 +262,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function blogname_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$blogname = get_option( 'boldgrid_staging_blogname' );
 			return $blogname;
 		}
@@ -265,7 +279,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function blogname_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_blogname', $new_value );
 
 			return $old_value;
@@ -332,7 +346,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// For example, convert 'pre_option_blog_public' to 'blog_public'.
 		$option = substr( current_filter(), strlen( 'delete_option_' ) );
 
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			delete_option( 'boldgrid_staging_' . $option );
 
 			// Restore our active option to its value before delete_option was called.
@@ -370,7 +384,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// For example, convert 'pre_option_blog_public' to 'blog_public'.
 		$option = substr( current_filter(), strlen( 'pre_option_' ) );
 
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$staged_option = get_option( 'boldgrid_staging_' . $option );
 
 			// Allow for custom values to be returned for specific options.
@@ -407,7 +421,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 		// For example, convert 'pre_option_blog_public' to 'blog_public'.
 		$option = substr( current_filter(), strlen( 'pre_option_update_' ) );
 
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_' . $option, $new_value );
 
 			// Why are we returning the old_value?
@@ -434,7 +448,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function sidebars_widgets_pre_option( $content ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$sidebars_widgets = get_option( 'boldgrid_staging_sidebars_widgets' );
 
 			return apply_filters( 'boldgrid_staging_pre_option_sidebars_widgets',
@@ -453,7 +467,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return string
 	 */
 	public function sidebars_widgets_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_sidebars_widgets', $new_value );
 
 			return $old_value;
@@ -471,7 +485,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return mixed The value of the boldgrid_staging_theme_switched option.
 	 */
 	public function theme_switched_pre_option() {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			return get_option( 'boldgrid_staging_theme_switched' );
 		} else {
 			return false;
@@ -490,7 +504,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return mixed Depending on if staging, either $new_value or $old_value.
 	 */
 	public function theme_switched_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_theme_switched', $new_value );
 
 			return $old_value;
@@ -508,7 +522,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return mixed The value of the theme_switched_via_customizer option.
 	 */
 	public function theme_switched_via_customizer_pre_option() {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			return get_option( 'boldgrid_staging_theme_switched_via_customizer' );
 		} else {
 			return false;
@@ -527,7 +541,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 * @return mixed Depending on if staging, either $new_value or $old_value.
 	 */
 	public function theme_switched_via_customizer_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_theme_switched_via_customizer', $new_value );
 
 			return $old_value;
@@ -564,7 +578,7 @@ class Boldgrid_Staging_Option extends Boldgrid_Staging_Base {
 	 */
 	public function value_before_deletion( $option ) {
 		// We're only interested in saving options when we're in a Staging environment.
-		if( ! $this->user_should_see_staging() ) {
+		if( ! $this->core->base->user_should_see_staging() ) {
 			return;
 		}
 

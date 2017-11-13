@@ -18,7 +18,15 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * BoldGrid Theme Staging class
  */
-class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
+class Boldgrid_Staging_Theme {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
 
 	/**
 	 * The staged stylesheet.
@@ -30,12 +38,14 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 	public $staging_stylesheet;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @since unknown
+	 *
+	 * @param Boldgrid_Staging $core
 	 */
-	public function __construct() {
-		parent::__construct();
-
-		$this->staging_stylesheet = get_option( 'boldgrid_staging_stylesheet' );
+	public function __construct( $core ) {
+		$this->core = $core;
 	}
 
 	/**
@@ -85,9 +95,9 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 		 *   For setting theme mods, this will ensure we're not setting active theme mods when
 		 *   we're expecting to set staged theme mods.
 		 */
-		if( $this->staging_stylesheet ) {
-			add_action( 'pre_option_theme_mods_' . $this->staging_stylesheet, array( $this, 'theme_mods_pre_option' ) );
-			add_action( 'pre_update_option_theme_mods_' . $this->staging_stylesheet, array( $this, 'theme_mods_pre_option_update' ), 10, 2 );
+		if( $this->core->staging_stylesheet ) {
+			add_action( 'pre_option_theme_mods_' . $this->core->staging_stylesheet, array( $this, 'theme_mods_pre_option' ) );
+			add_action( 'pre_update_option_theme_mods_' . $this->core->staging_stylesheet, array( $this, 'theme_mods_pre_option_update' ), 10, 2 );
 		} else {
 			add_action( 'pre_option_theme_mods_' . get_option( 'stylesheet' ), array( $this, 'theme_mods_pre_option' ) );
 			add_action( 'pre_update_option_theme_mods_' . get_option( 'stylesheet' ), array( $this, 'theme_mods_pre_option_update' ), 10, 2 );
@@ -123,25 +133,25 @@ class Boldgrid_Staging_Theme extends Boldgrid_Staging_Base {
 				'admin_head'
 			) );
 
-			add_action( 'update_option_boldgrid_staging_theme_mods_' . $this->staging_stylesheet,
+			add_action( 'update_option_boldgrid_staging_theme_mods_' . $this->core->staging_stylesheet,
 				array (
 					$this,
 					'updating_staging_mods'
 				), 1 );
 
-			add_action( 'update_option_boldgrid_staging_theme_mods_' . $this->staging_stylesheet,
+			add_action( 'update_option_boldgrid_staging_theme_mods_' . $this->core->staging_stylesheet,
 				array (
 					$this,
 					'finished_updating_staging_mods'
 				), 99 );
 
-			add_action( 'add_option_boldgrid_staging_theme_mods_' . $this->staging_stylesheet,
+			add_action( 'add_option_boldgrid_staging_theme_mods_' . $this->core->staging_stylesheet,
 				array (
 					$this,
 					'updating_staging_mods'
 				), 1 );
 
-			add_action( 'add_option_boldgrid_staging_theme_mods_' . $this->staging_stylesheet,
+			add_action( 'add_option_boldgrid_staging_theme_mods_' . $this->core->staging_stylesheet,
 				array (
 					$this,
 					'finished_updating_staging_mods'
@@ -185,9 +195,9 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * @param string $hook
 	 */
 	public function customizer_switch_theme( $hook ) {
-		if ( true == $this->has_staging_theme && $this->in_customize ) {
+		if ( true == $this->core->has_staging_theme && 'customize.php' === $this->core->pagenow ) {
 			wp_enqueue_script( 'customizer-switch-theme.js',
-				$this->plugins_url . 'assets/js/customizer-switch-theme.js', array (),
+				BOLDGRID_STAGING_URL . 'assets/js/customizer-switch-theme.js', array (),
 				BOLDGRID_STAGING_VERSION, true );
 		}
 	}
@@ -273,7 +283,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 			return $content;
 		}
 
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$stylesheet = get_option( 'boldgrid_staging_stylesheet' );
 
 			return $stylesheet;
@@ -291,7 +301,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * @return string
 	 */
 	public function stylesheet_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_stylesheet', $new_value );
 
 			return $old_value;
@@ -308,10 +318,10 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * @return array
 	 */
 	public function theme_mods_pre_option( $content ) {
-		if ( $this->user_should_see_staging() || $this->updating_staging_theme_mods ) {
+		if ( $this->core->base->user_should_see_staging() || $this->updating_staging_theme_mods ) {
 
-			if( $this->staging_stylesheet ) {
-				return get_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, array() );
+			if( $this->core->staging_stylesheet ) {
+				return get_option( 'boldgrid_staging_theme_mods_' . $this->core->staging_stylesheet, array() );
 			} else {
 				return array();
 			}
@@ -329,10 +339,10 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * @return array
 	 */
 	public function theme_mods_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 
-			if( $this->staging_stylesheet ) {
-				update_option( 'boldgrid_staging_theme_mods_' . $this->staging_stylesheet, $new_value );
+			if( $this->core->staging_stylesheet ) {
+				update_option( 'boldgrid_staging_theme_mods_' . $this->core->staging_stylesheet, $new_value );
 			}
 
 			return $old_value;
@@ -355,7 +365,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 			return $content;
 		}
 
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			$content = get_option( 'boldgrid_staging_template' );
 		}
 
@@ -371,7 +381,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	 * @return unknown
 	 */
 	public function template_pre_option_update( $new_value, $old_value ) {
-		if ( $this->user_should_see_staging() ) {
+		if ( $this->core->base->user_should_see_staging() ) {
 			update_option( 'boldgrid_staging_template', $new_value );
 
 			return $old_value;
@@ -445,7 +455,7 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 	public function general_theme_framework( $boldgrid_framework_configs ) {
 
 		// If staging == 1 or viewing staging pages.
-		if ( true == $this->user_should_see_staging() ) {
+		if ( true == $this->core->base->user_should_see_staging() ) {
 
 			// Update the name of the css file.
 			$output_name = $boldgrid_framework_configs['customizer-options']['colors']['settings']['output_css_name'];
@@ -513,14 +523,14 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 		/*
 		 * Ensure we have a valid staging theme.
 		 *
-		 * # Make sure $this->staging_stylesheet is not empty.
-		 * # Ensure wp_get_theme successfully fetches $this->staging_stylesheet.
+		 * # Make sure $this->core->staging_stylesheet is not empty.
+		 * # Ensure wp_get_theme successfully fetches $this->core->staging_stylesheet.
 		 *
 		 * The empty check is required because passing null to wp_get_theme will return the current
 		 * active theme, which will trigger a false positive.
 		 */
-		$staged_theme = wp_get_theme( $this->staging_stylesheet );
-		if( empty( $this->staging_stylesheet ) || ! $staged_theme->exists() ) {
+		$staged_theme = wp_get_theme( $this->core->staging_stylesheet );
+		if( empty( $this->core->staging_stylesheet ) || ! $staged_theme->exists() ) {
 			return $prepared_themes;
 		}
 
@@ -530,16 +540,16 @@ a.button.button-primary.customize.load-customize.hide-if-no-customize {
 		$first_theme_key = $first_theme['id'];
 
 		// Create a copy of our staged theme.
-		$staged_theme = $prepared_themes[ $this->staging_stylesheet ];
+		$staged_theme = $prepared_themes[ $this->core->staging_stylesheet ];
 
 		// Remove our active and staged theme from the array, we'll add it back later.
 		unset( $prepared_themes[ $first_theme_key ] );
-		unset( $prepared_themes[ $this->staging_stylesheet ] );
+		unset( $prepared_themes[ $this->core->staging_stylesheet ] );
 
 		// Add our active and staged theme to the begining of the array.
 		$prepared_themes = array(
 			$first_theme_key => $first_theme,
-			$this->staging_stylesheet => $staged_theme,
+			$this->core->staging_stylesheet => $staged_theme,
 			) + $prepared_themes;
 
 		return $prepared_themes;

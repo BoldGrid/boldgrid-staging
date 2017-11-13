@@ -18,9 +18,25 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * BoldGrid Page and Post Staging
  */
-class Boldgrid_Staging_Page_And_Post_Staging extends Boldgrid_Staging_Base {
-	public function __construct() {
-		parent::__construct();
+class Boldgrid_Staging_Page_And_Post_Staging {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since unknown
+	 *
+	 * @param Boldgrid_Staging $core
+	 */
+	public function __construct( $core ) {
+		$this->core = $core;
 
 		$this->possible_development_group_post_stati = array (
 			// published == active
@@ -119,7 +135,7 @@ span.permalink {
 		 * not looking at nav_menu_item's.
 		 */
 		if ( 'nav-menus.php' === $pagenow && 'nav_menu_item' != $query->get( 'post_type' ) ) {
-			if ( $this->user_should_see_staging() ) {
+			if ( $this->core->base->user_should_see_staging() ) {
 				$query->set( 'post_status', array ( 'staging' ) );
 			} else {
 				$query->set( 'post_status', array ( 'publish' ) );
@@ -153,7 +169,7 @@ span.permalink {
 		 */
 		$is_object_page = ( ! empty( $query->query_vars['post_type'] ) && 'page' === $query->query_vars['post_type'] );
 
-		if ( $this->in_ajax && $this->user_should_see_staging() && $is_action_menu && $is_object_page ) {
+		if ( $this->core->doing_ajax && $this->core->base->user_should_see_staging() && $is_action_menu && $is_object_page ) {
 				$query->set( 'post_status', array( 'staging' ) );
 
 				return;
@@ -165,7 +181,7 @@ span.permalink {
 	 * prompt the user to set a staged theme.
 	 */
 	public function after_copy_to_staging_prompt_to_set_staged_theme() {
-		if ( false == $this->has_staging_theme &&
+		if ( false == $this->core->has_staging_theme &&
 			 isset( $_SESSION['boldgrid_just_copied_a_page_to_staging'] ) &&
 			 true == $_SESSION['boldgrid_just_copied_a_page_to_staging'] ) {
 			// Get the link to themes.php
@@ -249,8 +265,10 @@ span.permalink {
 	 * @param WP_Post $post_before  Post object before the update.
 	 */
 	public function new_via_customizer( $post_ID, $post_after, $post_before ) {
+		$ajax_action = isset( $_POST['action'] ) ? $_POST['action'] : null;
+
 		// If we're not saving a page via customizer, abort.
-		if( 'customize_save' !== $this->ajax_action ) {
+		if( ! $this->core->doing_ajax || 'customize_save' !== $ajax_action ) {
 			return;
 		}
 
@@ -260,7 +278,7 @@ span.permalink {
 		}
 
 		// If we're not saving a page via the staging customizer, abort.
-		if( ! $this->is_referer_staging() ) {
+		if( ! $this->core->referer->is_staging() ) {
 			return;
 		}
 
@@ -345,8 +363,8 @@ span.permalink {
 		 * ********************************************************************
 		 */
 		if ( is_admin() ) {
-			$user_should_see_staging_and_this_is_inspiration_deployment = ( true ==
-				 $this->user_should_see_staging() && true == $this->is_inspiration_deployment() ) ? true : false;
+			$user_should_see_staging_and_this_is_inspiration_deployment =
+				 $this->core->base->user_should_see_staging() && $this->core->inspirations_deploy->is_inspiration_deployment();
 
 			$we_are_looking_for_a_page = ( ( is_array( $post_type ) && in_array( 'page',
 				$post_type ) ) || 'page' == $post_type ) ? true : false;
@@ -411,14 +429,14 @@ span.permalink {
 			 * If we should see staging and also looking for a nav_menu_item, return so that other
 			 * statements are not ran.
 			 */
-			if ( true == $this->user_should_see_staging() && 'nav_menu_item' == $post_type ) {
+			if ( true == $this->core->base->user_should_see_staging() && 'nav_menu_item' == $post_type ) {
 				return;
 			}
 
 			/**
 			 * Do we need to show only staged content?
 			 */
-			if ( true == $this->user_should_see_staging() &&
+			if ( true == $this->core->base->user_should_see_staging() &&
 				 true == $query_looking_for_either_page_or_post ) {
 				// By default, at this point we want to force only staged pages.
 				// Below, we will allow plugins to change this.
@@ -452,7 +470,7 @@ span.permalink {
 			 * Do we need to show only published content?
 			 */
 			if ( true == $query_looking_for_either_page_or_post &&
-				 false == $this->user_should_see_staging() ) {
+				 false == $this->core->base->user_should_see_staging() ) {
 				// if we have post_status AND
 				// if it is an array AND
 				// 'staging' is in that array
@@ -617,11 +635,15 @@ span.permalink {
 	}
 
 	/**
-	 * If viewing staging site and trying to load an active page (and vice versa), trigger 404.
+	 * Prevent page contamination.
+	 *
+	 * If viewing staging site and trying to load an active page (and vice
+	 * versa), trigger 404.
 	 *
 	 * @param unknown $wp_query
 	 */
 	public function prevent_page_contamination( $wp_query ) {
+
 		// Abort if we don't have a post_status.
 		if ( ! isset( $wp_query->queried_object->post_status ) ) {
 			return;
@@ -632,7 +654,7 @@ span.permalink {
 		 * 1. We're in production but trying to see a staged page, or
 		 * 2. We're in staging but trying to see a production page
 		 */
-		$contaminated = self::is_contaminated( $wp_query->queried_object->post_status );
+		$contaminated = $this->is_contaminated( $wp_query->queried_object->post_status );
 
 		// Should we be redirecting this page_name based on a redirect setup for the option
 		// boldgrid_staging_boldgrid_redirects?
@@ -648,13 +670,19 @@ span.permalink {
 	/**
 	 * Prevent the public from seeing staged pages.
 	 */
-	public static function prevent_public_from_seeing_staged_pages( $wp_query = null ) {
+	public function prevent_public_from_seeing_staged_pages( $wp_query = null ) {
 		// If we don't have wp_query, get it.
 		if ( null == $wp_query ) {
 			global $wp_query;
 		}
 
-		$post_name = null;
+		/*
+		 * If we have shared a "share preview link" with someone, we will allow
+		 * a visitor to that link to view staged pages.
+		 */
+		if( $this->core->customize_changeset->in_staging() ) {
+			return;
+		}
 
 		// If a guest is trying to view a staged paged, either redirect or 404.
 		if ( isset( $wp_query->queried_object ) and isset( $wp_query->queried_object->post_name ) and
@@ -764,7 +792,7 @@ span.permalink {
 		}
 
 		// If the user should not see staging content, abort.
-		if ( ! $this->user_should_see_staging() ) {
+		if ( ! $this->core->base->user_should_see_staging() ) {
 			return false;
 		}
 
@@ -1110,21 +1138,20 @@ span.permalink {
 	 *
 	 * @param string $post_status.
 	 */
-	public static function is_contaminated( $post_status ) {
+	public function is_contaminated( $post_status ) {
 
 		/*
 		 * Which site are you supposed to be viewing, active or staging?
 		 *
-		 * There are two ways you can view the front end of the site:
+		 * There are three ways you can view the front end of the site:
 		 * 1. You go to the front end of the site.
 		 * 2. You navigate pages from within the customizer.
-		 *
-		 * If you are on the front end, we'll determine active / staging based upon the $_SESSION.
-		 * If you are in the customizer preview, we'll determine active / staging based on whether
-		 * you're customizing your active or preview site.
+		 * 3. You can preview a customizer changeset.
 		 */
-		if ( is_customize_preview() ) {
-			$session_version = Boldgrid_Staging_Base::is_referer_staging() ? 'staging' : 'production';
+		if ( is_customize_preview() && $this->core->referer->is_customizer() ) {
+			$session_version = $this->core->referer->is_staging() ? 'staging' : 'production';
+		} elseif( is_customize_preview() ) {
+			$session_version = $this->core->customize_changeset->in_staging() ? 'staging' : 'production';
 		} elseif ( ! isset( $_SESSION ) ) {
 			$session_version = 'production';
 		} else {
@@ -1142,12 +1169,65 @@ span.permalink {
 	}
 
 	/**
+	 * Determine if a passed in parameter for a post, is a staging post.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @param int $_REQUEST['post']
+	 * @param int $_REQUEST['post_id']
+	 * @param int $_REQUEST['post_ID']
+	 * @return boolean
+	 */
+	public function is_staging_post() {
+		// Get the post ID. It could be set as several different keys in the $_REQUEST.
+		$possible_post_ids = array( 'post', 'post_id', 'post_ID' );
+
+		foreach ( $possible_post_ids as $post_id ) {
+			if ( ! empty( $_REQUEST[ $post_id ] ) ) {
+				$post_id = intval( $_REQUEST[ $post_id ] );
+				break;
+			}
+		}
+
+		if ( $post_id ) {
+			$post = get_post( $post_id );
+
+			// Is the user editing a page?
+			$is_editing = ( ! empty( $_REQUEST['action'] ) && 'editpost' === $_REQUEST['action'] );
+
+			/*
+			 * When editing a page, options for 'Active' and 'Staging' are listed under "Development Group"
+			 * within the "Publish" metabox.
+			 *
+			 * The selected option is in the $_REQUEST as 'development_group_post_status'.
+			 *
+			 * Do we have 'development_group_post_status' in the $_REQUEST?
+			*/
+			$has_dev_group = ( ! empty( $_REQUEST['development_group_post_status'] ) );
+
+			/*
+			 * If we are editing a page and 'development_group_post_status' is in the $_REQUEST,
+			 * treat post_status as whatever is set in 'development_group_post_status'.
+			 *
+			 * Else, the post_status will be whatever $post->post_status is actually set to.
+			*/
+			if ( $is_editing && $has_dev_group ) {
+				return ( 'staging' === $_REQUEST['development_group_post_status'] );
+			} else {
+				return ( $post && 'staging' === $post->post_status );
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Load our class-staging css/js
 	 */
 	public function wp_enqueue_scripts_class_staging( $hook ) {
 		if ( 'edit.php' === $hook && isset( $_GET['post_type'] ) && 'page' === $_GET['post_type'] ) {
 			wp_enqueue_script( 'edit.php.js',
-				$this->plugins_url . 'assets/js/edit.php.js',
+				BOLDGRID_STAGING_URL . 'assets/js/edit.php.js',
 				array (),
 				BOLDGRID_STAGING_VERSION,
 				true
@@ -1156,7 +1236,7 @@ span.permalink {
 
 		if ( 'post.php' === $hook ) {
 			wp_enqueue_script( 'post.php.js',
-				$this->plugins_url . 'assets/js/post.php.js',
+				BOLDGRID_STAGING_URL . 'assets/js/post.php.js',
 				array (),
 				BOLDGRID_STAGING_VERSION,
 				true
@@ -1164,7 +1244,7 @@ span.permalink {
 		}
 
 		wp_register_style( 'class-staging',
-			$this->plugins_url . 'assets/css/class-staging.css',
+			BOLDGRID_STAGING_URL . 'assets/css/class-staging.css',
 			array (),
 			BOLDGRID_STAGING_VERSION
 		);

@@ -13,7 +13,26 @@
  *
  * @since 1.3.5
  */
-class Boldgrid_Staging_Search extends Boldgrid_Staging_Base {
+class Boldgrid_Staging_Search {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @param Boldgrid_Staging $core
+	 */
+	public function __construct( $core ) {
+		$this->core = $core;
+	}
 
 	/**
 	 * Add hooks.
@@ -40,7 +59,7 @@ class Boldgrid_Staging_Search extends Boldgrid_Staging_Base {
 	 */
 	public function filter( $query ) {
 		if ( $query->is_search ) {
-			$post_status = $this->user_should_see_staging() ? 'staging' : 'publish';
+			$post_status = $this->core->base->user_should_see_staging() ? 'staging' : 'publish';
 			$query->set( 'post_status', array ( $post_status ) );
 		}
 	}

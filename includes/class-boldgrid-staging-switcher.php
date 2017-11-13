@@ -19,22 +19,35 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * BoldGrid Staging Switcher class
  */
-class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
+class Boldgrid_Staging_Switcher {
+
+	/**
+	 * Core object.
+	 *
+	 * @since 1.5.1
+	 * @var   Boldgrid_Staging
+	 */
+	public $core;
+
 	public $site_types = array (
 		'active',
 		'staging'
 	);
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @param Boldgrid_Staging $core
 	 */
-	public function __construct() {
+	public function __construct( $core ) {
+		$this->core = $core;
+
 		// set the view version if it is not already set.
 		if ( ! isset( $_SESSION['wp_staging_view_version'] ) ) {
 			$_SESSION['wp_staging_view_version'] = 'production';
 		}
-
-		parent::__construct();
 	}
 
 	/**
@@ -123,7 +136,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 	 */
 	public function modify_admin_bar( $wp_admin_bar ) {
 		// Only modify the admin bar IF the user has a staging theme set.
-		if ( true == $this->has_staging_theme ) {
+		if ( $this->core->has_staging_theme ) {
 			/**
 			 * ********************************************************************
 			 * admin (dashboard) admin_bar
@@ -155,7 +168,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 	 */
 	public function admin_enqueue_scripts( $hook ) {
 		wp_enqueue_script( 'admin-staging-switcher.js',
-			$this->plugins_url . 'assets/js/admin-staging-switcher.js', array (),
+			BOLDGRID_STAGING_URL . 'assets/js/admin-staging-switcher.js', array (),
 			BOLDGRID_STAGING_VERSION, true );
 	}
 
@@ -171,7 +184,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 	 */
 	public function admin_url( $url, $path, $blog_id ) {
 		// If we're getting the AJAX url, append ?staging=1 if necessary.
-		if( 'admin-ajax.php' === $path && $this->user_should_see_staging() ) {
+		if( 'admin-ajax.php' === $path && $this->core->base->user_should_see_staging() ) {
 			$url .= '?staging=1';
 		}
 
@@ -185,7 +198,7 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 	 */
 	public function enqueue_scripts( $hook ) {
 		wp_enqueue_script( 'staging-switcher.js',
-			$this->plugins_url . 'assets/js/staging-switcher.js', array (), BOLDGRID_STAGING_VERSION,
+			BOLDGRID_STAGING_URL . 'assets/js/staging-switcher.js', array (), BOLDGRID_STAGING_VERSION,
 			true );
 	}
 
@@ -292,8 +305,6 @@ class Boldgrid_Staging_Switcher extends Boldgrid_Staging_Base {
 	 */
 	public function switch_to_staging_callback() {
 		global $wpdb;
-
-		$this->session_start();
 
 		/**
 		 * ********************************************************************

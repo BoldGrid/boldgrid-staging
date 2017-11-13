@@ -22,6 +22,45 @@ class Boldgrid_Staging {
 	private $boldgrid_staging_config;
 
 	/**
+	 * Status of whether or not we're in an ajax call.
+	 *
+	 * @since 1.5.1
+	 * @var   bool
+	 */
+	public $doing_ajax;
+
+	/**
+	 * Keep track of which hooks have been added.
+	 *
+	 * Due to the current setup, some sets of hooks can be added from different
+	 * locations. We need to track which hook sets have been added.
+	 *
+	 * @since 1.5.1
+	 * @var   array
+	 */
+	private $has_added_hooks = array(
+		'always' => false,
+		'can_manage_options' => false,
+		'cannot_manage_options' => false,
+	);
+
+	/**
+	 * Status of whether or not there is a staging theme.
+	 *
+	 * @since 1.5.1
+	 * @var   bool
+	 */
+	public $has_staging_theme = false;
+
+	/**
+	 * Global pagenow.
+	 *
+	 * @since 1.5.1
+	 * @var   string
+	 */
+	public $pagenow;
+
+	/**
 	 * The URL address for this plugin.
 	 *
 	 * @var string
@@ -29,14 +68,79 @@ class Boldgrid_Staging {
 	public $plugins_url;
 
 	/**
+	 * Status of whether or not staging=1 is in the current url.
+	 *
+	 * @since 1.5.1
+	 * @var   bool
+	 */
+	public $staging_in_url;
+
+	/**
+	 * Current staging stylesheet.
+	 *
+	 * @since 1.5.1
+	 * @var   string
+	 */
+	public $staging_stylesheet;
+
+	/**
+	 * Current staging template.
+	 *
+	 * @since 1.5.1
+	 * @var   string
+	 */
+	public $staging_template;
+
+	/**
 	 * Constructor.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @global string $pagenow
 	 */
 	public function __construct() {
-		$this->plugins_url = plugins_url() . '/' . basename( BOLDGRID_STAGING_PATH ) . '/';
+		global $pagenow;
 
-		if ( current_user_can( 'manage_options' ) ) {
-			$this->load_dependencies();
-			$this->add_hooks();
+		$this->doing = defined( 'DOING_AJAX' ) && DOING_AJAX;
+		$this->pagenow = $pagenow;
+		$this->staging_in_url = isset( $_REQUEST['staging'] ) && '1' === $_REQUEST['staging'];
+
+		$this->set_staging_theme();
+	}
+
+	/**
+	 * Init.
+	 *
+	 * @since 1.5.1
+	 */
+	public function init() {
+		$this->load_dependencies();
+
+		/*
+		 * Add hooks.
+		 *
+		 * 1. Initialize needed classes and make available from $this. This
+		 *    approach is similar to how the BoldGrid Backup plugin uses
+		 *    $this->core as a Mediator.
+		 * 2. For each of the classes, add the applicable hooks. This is taken
+		 *    from version 1.0 of the Staging plugin, and should probably be
+		 *    updated in the future.
+		 *
+		 * Initially, the init of the plugin was handled with the plugin's core
+		 * file, boldgrid-staging.php. As time went on, we began adding logic to
+		 * the file that included adding hooks for certain situations / users.
+		 * That logic has instead been moved to this and several other method.
+		 *
+		 * We begin with add_hooks_always, which instantiates classes and adds
+		 * hooks regardless of whether the user is logged in or not. Then we
+		 * add additional hooks based upon whether the user can manage options
+		 * or not. This logic will need to be updated in the future as well.
+		 */
+		$this->add_hooks_always();
+		if ( $this->customize_changeset->in_staging() || current_user_can( 'manage_options' ) ) {
+			$this->add_hooks_can_manage_options();
+		} else {
+			$this->add_hooks_cannot_manage_options();
 		}
 
 		$this->prepare_plugin_update();
@@ -69,47 +173,39 @@ class Boldgrid_Staging {
 	}
 
 	/**
+	 * Set staging stylesheet and template.
+	 *
+	 * @since 1.5.1
+	 */
+	public function set_staging_theme() {
+		$this->staging_stylesheet = get_option( 'boldgrid_staging_stylesheet' );
+		$this->staging_template = get_option( 'boldgrid_staging_template' );
+
+		$this->has_staging_theme = false !== $this->staging_stylesheet && false !== $this->staging_template;
+	}
+
+	/**
 	 * Load dependencies.
 	 *
 	 * @since 1.3.8
 	 */
 	public function load_dependencies() {
-		// Load and instantiate Boldgrid_Staging_Config:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-config.php';
-		$this->boldgrid_staging_config = new Boldgrid_Staging_Config();
-
-		// Include our base functions
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-base.php';
-
-		// Include and instantiate additional staging classes:
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-page-and-post.php';
-		$this->page_and_post_staging = new Boldgrid_Staging_Page_And_Post_Staging();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-theme.php';
-		$this->theme_staging = new Boldgrid_Staging_Theme();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-option.php';
-		$this->option_staging = new BoldGrid_Staging_Option();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-menu.php';
-		$this->menu_staging = new Boldgrid_Staging_Menu();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-switcher.php';
-		$this->staging_switcher = new Boldgrid_Staging_Switcher();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-deployment.php';
-		$this->staging_deployment = new Boldgrid_Staging_Deployment();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-plugin.php';
-		$this->plugin_boldgrid_staging = new Boldgrid_Staging_Plugin();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-dashboard-menus.php';
-		$this->dashboard_menus = new Boldgrid_Staging_Dashboard_Menus();
-
 		require_once BOLDGRID_STAGING_PATH . '/includes/boldgrid-inspirations/class-boldgrid-staging-inspirations-deploy.php';
-		$this->inspirations_deploy = new Boldgrid_Staging_Inspirations_Deploy();
-
-		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-customizer.php';
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-search.php';
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-referer.php';
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-customize-changeset.php';
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-session.php';
+		require_once BOLDGRID_STAGING_PATH . '/includes/class-boldgrid-staging-post-meta.php';
 	}
 
 	/**
@@ -122,9 +218,104 @@ class Boldgrid_Staging {
 	}
 
 	/**
-	 * Add WordPress hooks.
+	 * Add hooks regardless of user or situation or anything else.
+	 *
+	 * @since 1.5.1
 	 */
-	public function add_hooks() {
+	public function add_hooks_always() {
+		if( $this->has_added_hooks['always'] ) {
+			return;
+		}
+
+		/*
+		 * These are classes that are required for both the front and back end
+		 * of the site.
+		 */
+		$this->base                  = new Boldgrid_Staging_Base( $this );
+		$this->search                = new Boldgrid_Staging_Search( $this );
+		$this->customize_changeset   = new Boldgrid_Staging_Customize_Changeset( $this );
+		$this->referer               = new Boldgrid_Staging_Referer();
+		$this->page_and_post_staging = new Boldgrid_Staging_Page_And_Post_Staging( $this );
+		$this->post_meta             = new Boldgrid_Staging_Post_Meta( $this );
+
+		$this->search->add_hooks();
+		$this->customize_changeset->add_hooks();
+
+		$this->has_added_hooks['always'] = true;
+	}
+
+	/**
+	 * Initialize BoldGrid Staging for site visitors/users who cannot
+	 * 'manage_options'.
+	 *
+	 * @since 1.5.1
+	 */
+	public function add_hooks_cannot_manage_options() {
+		if( $this->has_added_hooks['cannot_manage_options'] ) {
+			return;
+		}
+
+		// Register custom post status for all others:
+		Boldgrid_Staging_Page_And_Post_Staging::page_register_post_status_development_group();
+
+		/**
+		 * Handle redirects.
+		 *
+		 * Scenario 1: A once published page is now staged, and has a redirect to go to another
+		 * page.
+		 *
+		 * Scenario 2: A once published page was staged then trashed, and has a redirect to go to
+		 * another page.
+		*/
+		// Prevent staged pages from showing on the front-end of the site or redirect.
+		add_filter( 'parse_query', array( $this->page_and_post_staging, 'prevent_public_from_seeing_staged_pages' ), 20 );
+		add_filter( 'template_redirect', array( $this->page_and_post_staging, 'prevent_public_from_seeing_staged_pages' ) );
+
+		// Visitors to the front end of the site, prevent them from accessing the attribution-staging page.
+		add_filter( 'boldgrid_staging_is_contaminated', array( $this->page_and_post_staging, 'is_contaminated' ) );
+
+		$this->has_added_hooks['cannot_manage_options'] = true;
+	}
+
+	/**
+	 * Add hooks for users that can manage_options.
+	 *
+	 * The requirement for these hooks to only be ran for users that can
+	 * manage_options was originally because we only allowed administrators to
+	 * view a staging site.
+	 *
+	 * These hooks do the grunt work of the staging plugin. They intercept calls
+	 * to update options, hook into other plugins like BoldGrid Inspirations,
+	 * plus many other things. If there was a time that you needed this this
+	 * functionality, you would need to add these hooks.
+	 *
+	 * There is another time that we need these hooks however. As of WordPress
+	 * 4.9, you can schedule changes in the Customizer. Let's say you schedule
+	 * changes to the Staging site for 5 minutes from now AND in 5 minutes a
+	 * visitor triggers a wp-cron to publish the scheduled changes, the action
+	 * needs to know to load all these hooks so we update the proper site.
+	 */
+	public function add_hooks_can_manage_options() {
+		if( $this->has_added_hooks['can_manage_options'] ) {
+			return;
+		}
+
+		// Staging relies on sessions, make sure we've got one started.
+		if ( ! session_id() ) {
+			session_start();
+		}
+
+		$this->boldgrid_staging_config = new Boldgrid_Staging_Config();
+		$this->theme_staging           = new Boldgrid_Staging_Theme( $this );
+		$this->option_staging          = new BoldGrid_Staging_Option( $this );
+		$this->menu_staging            = new Boldgrid_Staging_Menu( $this );
+		$this->staging_switcher        = new Boldgrid_Staging_Switcher( $this );
+		$this->staging_deployment      = new Boldgrid_Staging_Deployment();
+		$this->plugin_boldgrid_staging = new Boldgrid_Staging_Plugin( $this );
+		$this->dashboard_menus         = new Boldgrid_Staging_Dashboard_Menus();
+		$this->inspirations_deploy     = new Boldgrid_Staging_Inspirations_Deploy( $this );
+		$this->session                 = new Boldgrid_Staging_Session( $this );
+
 		if ( is_admin() ) {
 			// Check PHP and WordPress versions for compatibility:
 			add_action( 'admin_init', array (
@@ -159,6 +350,9 @@ class Boldgrid_Staging {
 		$this->plugin_boldgrid_staging->add_hooks();
 		$this->dashboard_menus->add_hooks();
 		$this->inspirations_deploy->add_hooks();
+		$this->session->add_hooks();
+
+		$this->has_added_hooks['can_manage_options'] = true;
 	}
 
 	/**
@@ -236,7 +430,7 @@ class Boldgrid_Staging {
 		switch ( $hook ) {
 			case 'themes.php' :
 				wp_enqueue_script( 'themes.js',
-					$this->plugins_url . 'assets/js/themes.js',
+					BOLDGRID_STAGING_URL . 'assets/js/themes.js',
 					array (),
 					BOLDGRID_STAGING_VERSION,
 					true
@@ -256,12 +450,12 @@ class Boldgrid_Staging {
 
 			case 'nav-menus.php' :
 				wp_enqueue_script( 'hook.nav-menus.php.js',
-					$this->plugins_url . 'assets/js/hook.nav-menus.php.js', array (),
+					BOLDGRID_STAGING_URL . 'assets/js/hook.nav-menus.php.js', array (),
 					BOLDGRID_STAGING_VERSION, true );
 
 				if ( isset( $_GET['action'] ) && 'locations' == $_GET['action'] ) {
 					wp_enqueue_script( 'hook.nav-menus-locations.php.js',
-						$this->plugins_url . 'assets/js/hook.nav-menus-locations.php.js', array (),
+						BOLDGRID_STAGING_URL . 'assets/js/hook.nav-menus-locations.php.js', array (),
 						BOLDGRID_STAGING_VERSION, true );
 				}
 				break;
@@ -282,11 +476,8 @@ class Boldgrid_Staging {
 	 * @since 1.0.7
 	 */
 	public function enqueue_scripts_add_gridblock_sets() {
-		$base = new Boldgrid_Staging_Base();
-		$base->set_has_staging_theme();
-
 		wp_register_script( 'hook.pages_page_boldgrid-add-gridblock-sets.js',
-			$this->plugins_url . 'assets/js/hook.pages_page_boldgrid-add-gridblock-sets.js',
+			BOLDGRID_STAGING_URL . 'assets/js/hook.pages_page_boldgrid-add-gridblock-sets.js',
 			array (), BOLDGRID_STAGING_VERSION, true );
 
 		$translate = array (
@@ -313,7 +504,7 @@ class Boldgrid_Staging {
 		$boldgrid_staging_option = new Boldgrid_Staging_Option();
 
 		wp_register_script( 'hook.options-reading.php.js',
-			$this->plugins_url . 'assets/js/hook.options-reading.php.js', array( 'jquery', 'wp-util' ),
+			BOLDGRID_STAGING_URL . 'assets/js/hook.options-reading.php.js', array( 'jquery', 'wp-util' ),
 			BOLDGRID_STAGING_VERSION, true );
 
 		wp_localize_script( 'hook.options-reading.php.js', 'boldgrid_staging_options_to_stage',
