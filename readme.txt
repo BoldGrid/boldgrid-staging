@@ -2,7 +2,7 @@
 Contributors: imh_brad, joemoto, rramo012, timph
 Tags: staging, duplication, clone
 Requires at least: 4.4
-Tested up to: 4.8.1
+Tested up to: 4.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ BoldGrid Staging is a standalone plugin to allow use of a staged website while k
 
 == Changelog ==
 
-= 1.5.1 In progress =
+= 1.5.1 =
 * Bug fix:      JIRA WPB-3586   Stage button missing from Change themes.
 * Bug fix:      JIRA WPB-3589   Customizer switcher not working.
 * New feature:  JIRA WPB-3593   Support new Customizer scheduler.
