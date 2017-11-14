@@ -56,6 +56,7 @@ class Boldgrid_Staging_Customize_Changeset {
 		add_action( 'save_post_page', array( $this, 'on_save_page' ), 10, 3 );
 		add_action( 'transition_post_status', array( $this, 'on_transition_post_status' ), 9, 3 );
 		add_action( 'wp_insert_post_data', array( $this, 'wp_insert_post_data'), 10, 2 );
+		add_filter( 'customize_changeset_branching', array( $this, 'customize_changeset_branching' ), 10, 2 );
 	}
 
 	/**
@@ -185,6 +186,35 @@ class Boldgrid_Staging_Customize_Changeset {
 		 * changes are made to staging instead of active.
 		 */
 		$this->core->add_hooks_can_manage_options();
+	}
+
+	/**
+	 * Enable customize changeset branching.
+	 *
+	 * If you are using the staging plugin, then you need branching customize
+	 * changesets. This is because you will need one branch for your active site
+	 * and one for your staging site.
+	 *
+	 * By default WordPress is using linear rather than branching. This means
+	 * that IF we didn't enable branching, then:
+	 *   1. The user would save a draft of their Staging changset
+	 *   2. When they load the Active customizer, it would see the Staging
+	 *      changeset and load that.
+	 *
+	 * THIS DOES MEAN that if you enable branching, the only way to continue
+	 * editing a branch is to access the customizer and passing changeset_uuid
+	 * in the url. Natively, if you're using the "share preview link", the
+	 * Customize link in the admin bar will have the changeset_uuid added.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @param  bool                 $allow_branching Whether branching is allowed. If `false`, the default,
+	 *                                              then only one saved changeset exists at a time.
+	 * @param  WP_Customize_Manager $wp_customize    Manager instance.
+	 * @return bool True
+	 */
+	public function customize_changeset_branching( $allow_branching, $wp_customize ) {
+		return true;
 	}
 
 	/**
