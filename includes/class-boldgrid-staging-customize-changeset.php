@@ -78,6 +78,16 @@ class Boldgrid_Staging_Customize_Changeset {
 		global $wpdb;
 		$query = "SELECT ID FROM $wpdb->posts WHERE post_name = %s AND post_type = 'customize_changeset';";
 		$post_id = $wpdb->get_var( $wpdb->prepare( $query, $uuid ));
+		/*
+		 * @todo If you immediately open the staging customizer and open any of
+		 * the preview site's links in a new tab, the site in the new tab will
+		 * be discombobulated. This is because at that point, the
+		 * customize_changeset has yet to be saved to the database, and we have
+		 * not had the chance to flag it as is_staging. But, if you first change
+		 * your site title and then open a link in a new tab, it works. So, for
+		 * the user, don't immediately load the staging customizer and open a
+		 * link in a new tab.
+		 */
 		if( is_null( $post_id ) ) {
 			return false;
 		}
