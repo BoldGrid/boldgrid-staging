@@ -42,7 +42,7 @@ class Boldgrid_Staging_Update {
 				array (
 					$this,
 					'custom_plugins_transient_update',
-				), 11
+				), 11, 3
 			);
 
 			add_filter( 'site_transient_update_plugins',
@@ -56,7 +56,7 @@ class Boldgrid_Staging_Update {
 				array (
 					$this,
 					'custom_plugins_transient_update',
-				), 11
+				), 11, 2
 			);
 		}
 
@@ -94,10 +94,12 @@ class Boldgrid_Staging_Update {
 	 * @global $pagenow    The current WordPress page filename.
 	 * @global $wp_version The WordPress version.
 	 *
-	 * @param object $transient WordPress plugin update transient.
+	 * @param  object $transient WordPress plugin update transient.
+	 * @param  string $action    Action name.
+	 * @param  array  $args      Optional arguments.
 	 * @return object $transient
 	 */
-	public function custom_plugins_transient_update( $transient ) {
+	public function custom_plugins_transient_update( $transient, $action, $args = array() ) {
 		$version_data = get_site_transient( $this->configs['plugin_transient_name'] );
 
 		if ( ! function_exists( 'get_plugin_data' ) ) {
@@ -150,6 +152,12 @@ class Boldgrid_Staging_Update {
 
 		global $pagenow;
 
+		$install_or_ajax = in_array(
+			$pagenow,
+			array( 'plugin-install.php', 'admin-ajax.php' ),
+			true
+		);
+
 		// Create a new object to be injected into transient.
 		if ( 'plugin-install.php' === $pagenow && isset( $_GET['plugin'] ) &&
 			 $this->configs['plugin_name'] === $_GET['plugin'] ) {
@@ -182,7 +190,6 @@ class Boldgrid_Staging_Update {
 			$transient->name = $version_data->result->data->title;
 			$transient->requires = $version_data->result->data->requires_wp_version;
 			$transient->tested = $version_data->result->data->tested_wp_version;
-			// $transient->downloaded = $version_data->result->data->downloads;
 			$transient->last_updated = $version_data->result->data->release_date;
 			$transient->download_link = $this->configs['asset_server'] .
 				 $this->configs['ajax_calls']['get_asset'] .
@@ -194,15 +201,6 @@ class Boldgrid_Staging_Update {
 				( $compatibility = json_decode( $version_data->result->data->compatibility, true ) ) ) {
 					$transient->compatibility = $version_data->result->data->compatibility;
 			}
-
-			/*
-			 * Not currently showing ratings.
-			 * if ( ! ( empty( $version_data->result->data->rating ) ||
-			 * empty( $version_data->result->data->num_ratings ) ) ) {
-			 * $transient->rating = ( float ) $version_data->result->data->rating;
-			 * $transient->num_ratings = ( int ) $version_data->result->data->num_ratings;
-			 * }
-			 */
 
 			$transient->added = '2015-03-19';
 
@@ -224,8 +222,7 @@ class Boldgrid_Staging_Update {
 			$transient->slug = $this->configs['plugin_name'];
 			$transient->version = $version_data->result->data->version;
 			$transient->new_version = $version_data->result->data->version;
-			// $transient->active_installs = true;
-		} elseif ( ! in_array( $pagenow, array( 'plugin-install.php', 'admin-ajax.php' ), true ) ) {
+		} else if ( 'update_plugins' === $action && ! $install_or_ajax ) {
 			$obj = new stdClass();
 			$obj->slug = $this->configs['plugin_name'];
 			$obj->plugin = $this->configs['plugin_name'] . '/' .
